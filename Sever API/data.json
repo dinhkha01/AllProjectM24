@@ -1,0 +1,195 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "dinhkha2k3@gmail.com",
+      "password": "$2a$10$cQd3nDwZJNu5jKEyHJfo0uD93pUnLldLSY1lmV9DqJ73qCxyDyuve",
+      "name": "Nguyễn Đình Kha",
+      "phone": "0902956579",
+      "role": true,
+      "avatar": "hi",
+      "banner": "",
+      "friends": []
+    },
+    {
+      "id": 2,
+      "email": "kha@gmail.com",
+      "password": "$2a$10$G6KnREtKrD4U3xBIXiLLFO449V1gNetg5j0kJO2RcjSIMrWNE4ucq",
+      "name": "Kha",
+      "phone": "0902956579",
+      "role": false,
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F2?alt=media&token=363fe995-fb78-4f0d-b1ea-76debeaf9a16",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F2?alt=media&token=3fef6374-38e4-43ca-a73a-e83f21e75db9",
+      "friends": [
+        {
+          "userId": 3,
+          "status": "accept",
+          "add_at": "2024-08-05T13:43:11.507Z"
+        }
+      ],
+      "notyfi": [
+        {
+          "userId": 3,
+          "content": " đã gửi lời mời kết bạn",
+          "add_at": "2024-08-05T13:43:11.506Z"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "email": "ben10@gmail.com",
+      "password": "$2a$10$IKP7iB86Z9HGh/mhlfnfv.I7dPk/4TwDizdwM/u5A9co95ckk6awG",
+      "name": "Hà",
+      "phone": "0902956579",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2FScreenshot%202024-01-10%20083813.png?alt=media&token=2efbb409-d54a-4432-8982-a4b401154249",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F3?alt=media&token=484d7176-16ec-4029-a0e0-01e5f475a706",
+      "role": false,
+      "friends": [
+        {
+          "userId": 2,
+          "status": "accept",
+          "add_at": "2024-08-05T13:43:11.469Z"
+        }
+      ],
+      "notyfi": [
+        {
+          "userId": 2,
+          "content": " đã gửi lời mời kết bạn",
+          "add_at": "2024-08-05T13:41:52.983Z"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "email": "alo@gmail.com",
+      "password": "$2a$10$O2V8VXjAKnPOljTkK65j0O4m8FcgqBERDM9sBKb0Pj01xR9QmRS92",
+      "name": "hi",
+      "phone": "1",
+      "role": false,
+      "avatar": "",
+      "banner": "",
+      "friends": [],
+      "notyfi": []
+    }
+  ],
+  "post": [
+    {
+      "content": "anh nè",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Fkh.jpg?alt=media&token=c6ccef89-0ceb-4bd7-8fe6-8334ebc85e23"
+      ],
+      "userId": 2,
+      "date": "2024-07-30T08:09:02.083Z",
+      "id": 3
+    },
+    {
+      "content": "hi",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2FScreenshot%202024-01-10%20083813.png?alt=media&token=2efbb409-d54a-4432-8982-a4b401154249"
+      ],
+      "userId": 3,
+      "date": "2024-07-30T13:51:22.957Z",
+      "id": 4
+    },
+    {
+      "content": "hu",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Fkh.jpg?alt=media&token=5318de48-20ae-46bd-ade6-305a9f50543e",
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Ffootr.png?alt=media&token=c9f6c0e5-3081-4610-ad27-1f5d863891c6",
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2FScreenshot%202024-01-10%20083813.png?alt=media&token=47f48e5d-8501-4dae-931d-b5dd849525b2",
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Fkong.jpg?alt=media&token=a73fc011-baaf-4da3-b3f3-044df2848f71",
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Fkh.jpg?alt=media&token=04534e89-e98b-4d54-af1a-a14395eab0a6",
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2FScreenshot%202024-01-10%20083813.png?alt=media&token=cb11cd6b-2240-49b4-a9f7-3ee1ef56beb8"
+      ],
+      "userId": 2,
+      "date": "2024-07-31T03:14:13.385Z",
+      "id": 6
+    },
+    {
+      "content": "a",
+      "img": [],
+      "userId": 2,
+      "groupId": "1",
+      "id": 7
+    },
+    {
+      "content": "helo",
+      "img": [],
+      "userId": 2,
+      "groupId": "1",
+      "id": 8
+    },
+    {
+      "content": "a",
+      "img": [],
+      "userId": 2,
+      "date": "2024-08-07T13:43:25.144Z",
+      "id": 9
+    }
+  ],
+  "group": [
+    {
+      "id": 1,
+      "groupName": "QQNe",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/group-avatars%2F1?alt=media&token=da2da3bf-5d8b-4ba2-9cb5-9ec83622ffe1",
+      "coverimg": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/group-covers%2F1?alt=media&token=3e458d33-8600-45d4-bb8f-ce75fef76904",
+      "members": [
+        {
+          "userId": 2,
+          "role": true,
+          "dateJoin": ""
+        },
+        {
+          "userId": 3,
+          "role": false,
+          "dateJoin": ""
+        },
+        {
+          "userId": 4,
+          "role": false,
+          "dateJoin": "2024-08-07T15:24:38.715Z"
+        }
+      ],
+      "postGroup": [
+        {
+          "userId": 2,
+          "content": " như qq",
+          "img": [
+            "https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/454375239_1102727524753879_5478703130109379948_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=833d8c&_nc_ohc=BB67MeoieP0Q7kNvgEJrVSe&_nc_ht=scontent.fsgn2-7.fna&oh=00_AYDeyDnsXIrwhEz-B_qtKORjfuRDq-wgjNlYkmwiv4wWrQ&oe=66B781FE",
+            "https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/454375239_1102727524753879_5478703130109379948_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=833d8c&_nc_ohc=BB67MeoieP0Q7kNvgEJrVSe&_nc_ht=scontent.fsgn2-7.fna&oh=00_AYDeyDnsXIrwhEz-B_qtKORjfuRDq-wgjNlYkmwiv4wWrQ&oe=66B781FE"
+          ],
+          "dateat": "2024-08-06T13:48:17.225Z"
+        },
+        {
+          "userId": 3,
+          "content": " như qq",
+          "img": [],
+          "dateat": "2024-08-06T13:48:17.225Z"
+        },
+        {
+          "idPostGroup": 1723038497225,
+          "content": "a",
+          "img": [],
+          "userId": 2,
+          "dateat": "2024-08-07T13:48:17.225Z"
+        },
+        {
+          "idPostGroup": 1723038820520,
+          "content": "hi",
+          "img": [],
+          "userId": 3,
+          "dateat": "2024-08-07T13:53:40.520Z"
+        },
+        {
+          "idPostGroup": 1723038856768,
+          "content": "Hà nè",
+          "img": [
+            "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/group-posts%2F1%2Frc-upload-1723038535165-12?alt=media&token=6e4cdbe8-da1d-493a-b20d-e5855c512dc8"
+          ],
+          "userId": 3,
+          "dateat": "2024-08-07T13:54:16.768Z"
+        }
+      ]
+    }
+  ]
+}
