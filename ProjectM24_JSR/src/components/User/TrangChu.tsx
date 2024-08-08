@@ -1,32 +1,33 @@
-import React, { useEffect, useState, useMemo } from "react";
 import {
   EllipsisOutlined,
   HeartOutlined,
   MessageOutlined,
-  SendOutlined,
   PlusOutlined,
+  SendOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
-  Card,
-  Input,
-  Modal,
   Button,
+  Card,
   Form,
+  Image,
+  Input,
+  Menu,
+  Modal,
+  Radio,
   Upload,
   message,
-  Image,
-  Radio,
 } from "antd";
 import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store";
-import { getAllPost, createPost } from "../../service/Login-Register/Post";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../config/firebase";
-import { getAllUsers } from "../../service/Login-Register/User";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { storage } from "../../config/firebase";
+import { createPost, deletePost, getAllPost, updatePostPrivacy } from "../../service/Login-Register/Post";
+import { getAllUsers } from "../../service/Login-Register/User";
+import { RootState } from "../../store";
 
 const { Meta } = Card;
 
@@ -40,11 +41,7 @@ const TrangChu = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const posts = useSelector((state: RootState) => state.post.post);
-
-  const currentUser = useSelector(
-    (state: RootState) => state.users.currentUser
-  );
-
+  const currentUser = useSelector((state: RootState) => state.users.currentUser);
   const users = useSelector((state: RootState) => state.users.users);
 
   const sortedPosts = useMemo(() => {
@@ -143,6 +140,45 @@ const TrangChu = () => {
     setPreviewVisible(false);
   };
 
+  const handlePostOptionClick = (postId: number, option: string) => {
+    switch (option) {
+      case 'delete':
+        handleDeletePost(postId);
+        break;
+      case 'privacy':
+        handleUpdatePostPrivacy(postId);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleDeletePost = async (postId: number) => {
+    try {
+      await dispatch(deletePost(postId));
+      message.success('Bài viết đã được xóa thành công');
+      dispatch(getAllPost());
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      message.error('Có lỗi xảy ra khi xóa bài viết');
+    }
+  };
+
+  const handleUpdatePostPrivacy = async (postId: number) => {
+    try {
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        const newPrivacy = post.privacy === 'public' ? 'private' : 'public';
+        await dispatch(updatePostPrivacy({ postId, privacy: newPrivacy }));
+        message.success('Trạng thái bài viết đã được cập nhật');
+        dispatch(getAllPost());
+      }
+    } catch (error) {
+      console.error('Error updating post privacy:', error);
+      message.error('Có lỗi xảy ra khi cập nhật trạng thái bài viết');
+    }
+  };
+
   const handleAvatarClick = (clickedUserId: number | undefined) => {
     if (clickedUserId === undefined) return;
 
@@ -184,7 +220,7 @@ const TrangChu = () => {
                 {currentUser?.name}, bạn đang nghĩ gì thế?
               </span>
               <PlusOutlined style={{ marginLeft: "auto" }} />
-            </div>
+            </div>  
           }
         />
       </Card>
@@ -232,154 +268,153 @@ const TrangChu = () => {
                 <SendOutlined style={{ fontSize: "20px", marginRight: "5px" }} />
                 <span>Chia sẻ</span>
               </div>,
-            ]}
-          >
-            <Meta
-              avatar={
-                <Avatar
-                  src={getUserAvatar(post.userId)}
-                  onClick={(e: any) => {
-                    e.stopPropagation();
-                    handleAvatarClick(post.userId);
-                  }}
-                  style={{ cursor: "pointer" }}
-                />
-              }
-              title={
+              currentUser?.id === post.userId && (
                 <div
+                  key="options"
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
+                    justifyContent: "center",
+                    cursor: "pointer",
                   }}
-                >
-                  <div>
-                    <span style={{ fontWeight: "bold" }}>
-                      {getUserName(post.userId)}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: "12px",
-                        color: "#65676B",
-                        marginLeft: "8px",
-                      }}
-                    >
-                      {new Date(post.date).toLocaleString()}
-                    </span>
-                  </div>
-                  <EllipsisOutlined />
-                </div>
-              }
-            />
-            <div style={{ padding: "16px 0" }}>{post.content}</div>
-            {post.img.length > 0 && (
-              <div style={{ marginTop: "16px" }}>
-                <div
-                  style={{
-                    display: "grid",
-                    gridGap: "2px",
-                    gridTemplateColumns: `repeat(${Math.min(
-                      post.img.length,
-                      3
-                    )}, 1fr)`,
-                  }}
-                >
-                  {post.img.map((imageUrl, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        position: "relative",
-                        paddingTop: "100%",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <img
-                        alt={`Post content ${index + 1}`}
-                        src={imageUrl}
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => handlePreview(imageUrl, post.img)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            <Input
-              placeholder="Viết bình luận..."
-              prefix={
-                <Avatar
-                  src={currentUser?.avatar}
-                  size={24}
-                  style={{ marginRight: "8px", cursor: "pointer" }}
-                  onClick={(e: any) => {
+                  onClick={(e) => {
                     e.stopPropagation();
-                    handleAvatarClick(currentUser?.id);
+                    const menu = (
+                      <Menu
+                        onClick={({ key }) => handlePostOptionClick(post.id, key)}
+                        items={[
+                          { key: 'privacy', label: post.privacy === 'public' ? 'Đổi thành riêng tư' : 'Đổi thành công khai' },
+                          { key: 'delete', label: 'Xóa bài viết' },
+                        ]}
+                      />
+                    );
+                    Modal.info({
+                      title: 'Lựa chọn',
+                      content: menu,
+                      onOk() {},
+                      onCancel() {},
+                    });
                   }}
+                >
+                  <EllipsisOutlined style={{ fontSize: "20px" }} />
+                </div>
+              ),
+            ]}
+          >
+            
+            <Meta
+                  avatar={<Avatar src={getUserAvatar(post.userId)}  />}
+                  title={
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div>
+                        <span style={{ fontWeight: "bold" }}>{getUserName(post.userId)}</span>
+                        <span
+                          style={{
+                            fontSize: "12px",
+                            color: "#65676B",
+                            marginLeft: "8px",
+                          }}
+                        >
+                          {new Date(post.date).toLocaleString()}
+                        </span>
+                      </div>
+                      <EllipsisOutlined />
+                    </div>
+                  }
                 />
-              }
-              style={{
-                background: "#F0F2F5",
-                border: "none",
-                borderRadius: "20px",
-                padding: "8px 12px",
-                marginTop: "16px",
-              }}
-            />
+                 <div style={{ padding: "16px 0" }}>{post.content}</div>
+            <div>
+            {post.img.length > 0 && (
+                  <div style={{ marginTop: "16px" }}>
+                    <Image.PreviewGroup>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridGap: "2px",
+                          gridTemplateColumns: `repeat(${Math.min(
+                            post.img.length,
+                            3
+                          )}, 1fr)`,
+                        }}
+                      >
+                        {post.img.map((imageUrl, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              position: "relative",
+                              paddingTop: "100%",
+                              overflow: "hidden",
+                            }}
+                          >
+                            <img
+                              alt={`Post content ${index + 1}`}
+                              src={imageUrl}
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                borderRadius: "4px",
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </Image.PreviewGroup>
+                  </div>
+                )}
+             
+            </div>
           </Card>
         ))}
 
-      <Image
-        style={{ display: "none" }}
-        preview={{
-          visible: previewVisible,
-          src: previewImage,
-          onVisibleChange: handlePreviewClose,
-        }}
-      />
-
       <Modal
-        title="Tạo bài viết mới"
         visible={isModalVisible}
         onCancel={handleCancel}
-        footer={[
-          <Button key="cancel" onClick={handleCancel}>
-            Hủy
-          </Button>,
-          <Button key="submit" type="primary" onClick={handlePostSubmit}>
-            Đăng
-          </Button>,
-        ]}
+        onOk={handlePostSubmit}
+        title="Tạo bài viết mới"
+        okText="Đăng bài"
+        cancelText="Hủy"
       >
-        <Form form={form} layout="vertical">
+        <Form form={form}>
           <Form.Item
             name="content"
-            rules={[
-              { required: true, message: "Vui lòng nhập nội dung bài viết" },
-            ]}
+            rules={[{ required: true, message: "Vui lòng nhập nội dung bài viết" }]}
           >
-            <Input.TextArea rows={4} placeholder="Nội dung bài viết" />
+            <Input.TextArea placeholder="Bạn đang nghĩ gì?" />
           </Form.Item>
-          <Form.Item name="images">
-            <Upload {...uploadProps}>
-              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-            </Upload>
-          </Form.Item>
-          <Form.Item name="privacy" initialValue="public">
+          <Form.Item
+            name="privacy"
+            rules={[{ required: true, message: "Vui lòng chọn quyền riêng tư" }]}
+          >
             <Radio.Group>
               <Radio value="public">Công khai</Radio>
               <Radio value="private">Riêng tư</Radio>
             </Radio.Group>
           </Form.Item>
+          <Upload {...uploadProps} listType="picture-card">
+            {fileList.length < 8 && <div>
+              <PlusOutlined />
+              <div style={{ marginTop: 8 }}>Upload</div>
+            </div>}
+          </Upload>
         </Form>
+      </Modal>
+
+      <Modal
+        visible={previewVisible}
+        footer={null}
+        onCancel={handlePreviewClose}
+      >
+        <Image src={previewImage} width="100%" />
       </Modal>
     </div>
   );

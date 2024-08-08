@@ -45,6 +45,7 @@ export interface GroupPost {
 
 export interface Group {
   id: number;
+  userId:number;
   groupName: string;
   avatar: string;
   coverimg: string;

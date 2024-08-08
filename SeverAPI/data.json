@@ -130,46 +130,6 @@
       "date": "2024-07-31T03:14:13.385Z",
       "id": 6,
       "privacy": "private"
-    },
-    {
-      "content": "a",
-      "img": [],
-      "userId": 2,
-      "groupId": "1",
-      "id": 7,
-      "privacy": "public"
-    },
-    {
-      "content": "helo",
-      "img": [],
-      "userId": 2,
-      "groupId": "1",
-      "id": 8,
-      "privacy": "public"
-    },
-    {
-      "content": "a",
-      "img": [],
-      "userId": 2,
-      "date": "2024-08-07T13:43:25.144Z",
-      "id": 9,
-      "privacy": "public"
-    },
-    {
-      "content": "rieng",
-      "img": [],
-      "userId": 2,
-      "date": "2024-08-08T12:34:57.305Z",
-      "privacy": "private",
-      "id": 10
-    },
-    {
-      "content": "helo",
-      "img": [],
-      "userId": 3,
-      "date": "2024-08-08T12:38:47.243Z",
-      "privacy": "public",
-      "id": 11
     }
   ],
   "group": [
@@ -244,6 +204,20 @@
           "dateat": "2024-08-07T13:54:16.768Z"
         }
       ]
+    },
+    {
+      "groupName": "helo",
+      "avatar": "",
+      "coverimg": "",
+      "members": [
+        {
+          "userId": 2,
+          "role": true,
+          "dateJoin": "2024-08-08T14:29:05.631Z"
+        }
+      ],
+      "postGroup": [],
+      "id": 2
     }
   ]
 }

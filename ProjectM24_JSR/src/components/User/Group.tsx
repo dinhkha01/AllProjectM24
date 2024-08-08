@@ -3,8 +3,8 @@ import { Avatar, Button, Card, Input, List, Tabs } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Group as Groupp } from "../../config/interface";
-import { allGroups } from "../../service/Login-Register/Group";
+import {  Group as Groupp } from "../../config/interface";
+import { allGroups, createGroup } from "../../service/Login-Register/Group";
 import { getAllUsers } from "../../service/Login-Register/User";
 import { RootState } from "../../store";
 
@@ -37,8 +37,20 @@ const Group = () => {
 
   const handleCreateGroup = () => {
     if (newGroupName.trim()) {
-      // Here you would dispatch an action to create a new group
-      console.log("Creating new group:", newGroupName);
+      const userId = currentUser?.id;
+      const newGroup = {
+        groupName: newGroupName,
+        avatar: "",
+        coverimg: "",
+        members: [{
+          userId: userId,
+          role:true,
+          dateJoin:new Date().toISOString()
+
+        }],
+        postGroup: [],
+      };
+      dispatch(createGroup(newGroup));
       setNewGroupName("");
     }
   };
@@ -86,12 +98,12 @@ const Group = () => {
         <TabPane tab="Create Group" key="3">
           <Card>
             <Input
-              placeholder="Enter new group name"
+              placeholder="Enter new group name "
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
               style={{ marginBottom: 16 }}
             />
-            <Button type="primary" onClick={handleCreateGroup}>
+            <Button type="primary" onClick={()=>handleCreateGroup()}>
               Create Group
             </Button>
           </Card>

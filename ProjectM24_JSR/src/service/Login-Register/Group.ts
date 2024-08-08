@@ -107,7 +107,13 @@ export const addUserInGroup: any = createAsyncThunk(
     }
   }
 );
-
+export const createGroup: any = createAsyncThunk(
+  "group/createGroup",
+  async (data: Group) => {
+    const response = await api.post<Group>("group",data);
+    return response.data;
+  }
+);
 interface GroupState {
   groups: Group[];
   currentGroup: Group | null;
@@ -128,27 +134,24 @@ export const groupSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(allGroups.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(allGroups.fulfilled, (state, action: PayloadAction<Group[]>) => {
-        state.isLoading = false;
+      .addCase(allGroups.fulfilled, (state, action) => {
+
         state.groups = action.payload;
-        state.error = null;
+
       })
       
-      .addCase(getGroupById.fulfilled, (state, action: PayloadAction<Group>) => {
-        state.isLoading = false;
+      .addCase(getGroupById.fulfilled, (state, action) => {
+
         state.currentGroup = action.payload;
-        state.error = null;
+   
       })
      
-      .addCase(pushAvatar.fulfilled, (state, action: PayloadAction<Group>) => {
+      .addCase(pushAvatar.fulfilled, (state, action) => {
         if (state.currentGroup) {
           state.currentGroup.avatar = action.payload.avatar;
         }
       })
-      .addCase(pushCoverImg.fulfilled, (state, action: PayloadAction<Group>) => {
+      .addCase(pushCoverImg.fulfilled, (state, action) => {
         if (state.currentGroup) {
           state.currentGroup.coverimg = action.payload.coverimg;
         }
@@ -176,6 +179,8 @@ export const groupSlice = createSlice({
         if (state.currentGroup && state.currentGroup.id === groupId) {
           state.currentGroup = updatedGroup;
         }
+      }). addCase(createGroup.fulfilled,(state,action)=>{
+        state.groups=[...state.groups,action.payload]
       });
       
   },

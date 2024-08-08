@@ -15,6 +15,7 @@ import {
   Upload,
   message,
   List,
+  Radio,
 } from "antd";
 import {
   UserOutlined,
@@ -87,7 +88,7 @@ const Profile = () => {
   const handlePostSubmit = async () => {
     try {
       const values = await form.validateFields();
-      const { content } = values;
+      const { content, privacy } = values;
 
       let imageUrls: string[] = [];
 
@@ -103,6 +104,7 @@ const Profile = () => {
         img: imageUrls,
         userId: user?.id,
         date: new Date().toISOString(),
+        privacy
       };
 
       dispatch(createPost(postData));
@@ -469,10 +471,14 @@ const Profile = () => {
           </Form.Item>
           <Form.Item name="images">
             <Upload {...uploadProps}>
-              <Button icon={<UploadOutlined />} style={pinkButtonStyle}>
-                Chọn ảnh
-              </Button>
+              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
             </Upload>
+          </Form.Item>
+          <Form.Item name="privacy" initialValue="public">
+            <Radio.Group>
+              <Radio value="public">Công khai</Radio>
+              <Radio value="private">Riêng tư</Radio>
+            </Radio.Group>
           </Form.Item>
         </Form>
       </Modal>
