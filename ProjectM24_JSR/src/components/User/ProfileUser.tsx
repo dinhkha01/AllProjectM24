@@ -11,6 +11,7 @@ import {
   Col,
   Typography,
   Input,
+  message,
 } from "antd";
 import {
   UserOutlined,
@@ -21,6 +22,8 @@ import {
 } from "@ant-design/icons";
 import { RootState } from "../../store";
 import { post, users } from "../../config/interface";
+import { useDispatch } from "react-redux";
+import { rejectFriendRequest, updateFriends, updateReceiverFriends, updateUserNotify } from "../../service/Login-Register/User";
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
@@ -28,10 +31,10 @@ const { Meta } = Card;
 
 
 
-const ProfileUser: React.FC = () => {
+const ProfileUser= () => {
   const { userId } = useParams<{ userId: string }>();
   const parsedUserId = userId ? parseInt(userId, 10) : undefined;
-
+const dispatch= useDispatch()
   const allUsers = useSelector(
     (state: RootState) => state.users.users as users[]
   );
@@ -58,7 +61,79 @@ const ProfileUser: React.FC = () => {
     borderColor: "#FF69B4",
     color: "white",
   };
+  const unfriendButtonStyle = {
+    backgroundColor: "#f0f2f5",
+    borderColor: "#d3d5d8",
+    color: "#65676B",
+  };
 
+  const handleUnfriend = (userId: number) => {
+    if (currentUser) {
+      dispatch(
+        rejectFriendRequest({
+          currentUserId: currentUser.id,
+          friendId: userId,
+        })
+      )
+        .then(() => {
+          message.success("Đã hủy kết bạn");
+       
+          dispatch({
+            type: "UPDATE_FRIEND_STATUS",
+            payload: {
+              currentUserId: currentUser.id,
+              friendId: userId,
+              status: "unfriend",
+            },
+          });
+        })
+        .catch((error: any) => {
+          message.error("Không thể hủy kết bạn: " + error.message);
+        });
+    }
+  };
+  const handleAddFriend = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (currentUser && user) {
+      const newFriends = [
+        ...(currentUser.friends || []),
+        { userId: user.id, status: "pending", add_at: new Date().toISOString() },
+      ];
+  
+      dispatch(updateFriends(newFriends))
+        .then(() => {
+          message.success("Đã gửi lời mời kết bạn");
+  
+          // Cập nhật thông báo và bạn bè cho người dùng được mời kết bạn
+          const newNotify = [
+            ...(user.notyfi || []),
+            {
+              userId: currentUser.id,
+              content: ` đã gửi lời mời kết bạn`,
+              add_at: new Date().toISOString(),
+            },
+          ];
+          dispatch(updateUserNotify({ userId: user.id, newNotify }));
+  
+          // Cập nhật danh sách bạn bè của người nhận
+          const newReceiverFriends = [
+            ...(user.friends || []),
+            {
+              userId: currentUser.id,
+              status: "pending",
+              add_at: new Date().toISOString(),
+            },
+          ];
+          dispatch(
+            updateReceiverFriends({ userId: user.id, newFriends: newReceiverFriends })
+          );
+        })
+        .catch((error: any) => {
+          message.error("Không thể gửi lời mời kết bạn: " + error.message);
+        });
+    }
+  };
+  
   if (!user) {
     return <div>User not found</div>;
   }
@@ -109,12 +184,17 @@ const ProfileUser: React.FC = () => {
             </div>
           </div>
           <Row gutter={16} style={{ marginTop: 16 }}>
-            <Col>
-              <Button style={pinkButtonStyle}>
-                {isFriend ? "Bạn bè" : "Hủy bạn bè"}
-              </Button>
-            </Col>
-          </Row>
+         <Col>
+    {isFriend ? (
+      <>
+        <Button style={pinkButtonStyle}>Bạn bè</Button>
+        <Button style={unfriendButtonStyle} onClick={()=>handleUnfriend(user.id)} className="ml-2">Hủy kết bạn</Button>
+      </>
+    ) : (
+      <Button style={pinkButtonStyle}   onClick={handleAddFriend}>Kết bạn</Button>
+    )}
+  </Col>
+</Row>
         </div>
         <Tabs defaultActiveKey="1" style={{ padding: "0 16px" }}>
           <TabPane tab="Bài viết" key="1">

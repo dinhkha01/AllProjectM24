@@ -15,7 +15,7 @@ export type FriendType = {
   status: "pending" | "accept" | "blocked";
   add_at: string;
 };
-type notyfiType = {
+export type notyfiType = {
   userId: number;
   content: string;
   date: string;

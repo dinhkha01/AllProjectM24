@@ -15,7 +15,7 @@ const Login = () => {
   const { isLoading, error, currentUser } = useSelector(
     (state: RootState) => state.users
   );
-  console.log(currentUser);
+ 
 
   useEffect(() => {
     let timer: NodeJS.Timeout;

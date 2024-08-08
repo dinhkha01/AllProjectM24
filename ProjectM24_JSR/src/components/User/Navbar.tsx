@@ -25,6 +25,16 @@ const theme = createTheme({
 });
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      dispatch(autoLogin());
+    } else {
+      navigate("/login");
+    }
+  });
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>

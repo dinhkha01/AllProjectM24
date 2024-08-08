@@ -21,6 +21,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { registerUser } from "../../service/Login-Register/User";
 
+
 const { Title } = Typography;
 const { Step } = Steps;
 
@@ -127,18 +128,20 @@ const Register = () => {
     setLoading(true);
     try {
       const values = await form.validateFields();
-      const { confirmPassword, ...dataToSubmit } = {
+      const dataToSubmit  = {
         ...formData,
         ...values,
         role: false,
         avatar: "",
         banner: "",
+        friends:[],
+        notyfi:[],
       };
       const check = await dispatch(registerUser(dataToSubmit));
       if (registerUser.fulfilled.match(check)) {
         message.success("Đăng ký thành công!");
         setTimeout(() => {
-          navigate("/");
+          navigate("/login");
         }, 2000);
       } else {
         throw new Error(check.error.message);

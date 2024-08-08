@@ -9,7 +9,8 @@
       "role": true,
       "avatar": "hi",
       "banner": "",
-      "friends": []
+      "friends": [],
+      "notyfi": []
     },
     {
       "id": 2,
@@ -20,20 +21,8 @@
       "role": false,
       "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F2?alt=media&token=363fe995-fb78-4f0d-b1ea-76debeaf9a16",
       "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F2?alt=media&token=3fef6374-38e4-43ca-a73a-e83f21e75db9",
-      "friends": [
-        {
-          "userId": 3,
-          "status": "accept",
-          "add_at": "2024-08-08T03:01:15.288Z"
-        }
-      ],
-      "notyfi": [
-        {
-          "userId": 3,
-          "content": " đã gửi lời mời kết bạn",
-          "add_at": "2024-08-08T03:01:15.287Z"
-        }
-      ]
+      "friends": [],
+      "notyfi": []
     },
     {
       "id": 3,
@@ -44,20 +33,8 @@
       "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2FScreenshot%202024-01-10%20083813.png?alt=media&token=2efbb409-d54a-4432-8982-a4b401154249",
       "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F3?alt=media&token=484d7176-16ec-4029-a0e0-01e5f475a706",
       "role": false,
-      "friends": [
-        {
-          "userId": 2,
-          "status": "accept",
-          "add_at": "2024-08-08T03:01:15.245Z"
-        }
-      ],
-      "notyfi": [
-        {
-          "userId": 2,
-          "content": " đã gửi lời mời kết bạn",
-          "add_at": "2024-08-08T02:58:10.843Z"
-        }
-      ]
+      "friends": [],
+      "notyfi": []
     },
     {
       "id": 4,
@@ -70,6 +47,31 @@
       "banner": "",
       "friends": [],
       "notyfi": []
+    },
+    {
+      "email": "bin1@vn.com",
+      "password": "$2a$10$gyTwsgdOHqFuM30OSCEmAOkHwGbBbSsoIjt4WKHLzWn8MJHwQZSle",
+      "name": "chó tâm anh",
+      "phone": "0902956579",
+      "role": false,
+      "avatar": "",
+      "banner": "",
+      "friends": [],
+      "notyfi": [],
+      "id": 5
+    },
+    {
+      "email": "kha8112k3@gmail.com",
+      "password": "$2a$10$AwBnJKnGJBjg11C8y/QmAOGG5Eo3pJTv3DBJG9rGLIPXoJzM8PCca",
+      "name": "chó tâm anh",
+      "phone": "0902956579",
+      "confirmPassword": "123456",
+      "role": false,
+      "avatar": "",
+      "banner": "",
+      "friends": [],
+      "notyfi": [],
+      "id": 6
     }
   ],
   "post": [
@@ -148,6 +150,11 @@
           "userId": 4,
           "role": false,
           "dateJoin": "2024-08-07T15:24:38.715Z"
+        },
+        {
+          "userId": 5,
+          "role": false,
+          "dateJoin": "2024-08-08T05:46:52.187Z"
         }
       ],
       "postGroup": [

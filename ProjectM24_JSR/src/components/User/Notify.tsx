@@ -8,17 +8,14 @@ import {
   getAllUsers,
   rejectFriendRequest,
 } from "../../service/Login-Register/User";
+import { notyfiType } from "../../config/interface";
 
 const { Title, Text } = Typography;
 
-interface FriendRequest {
-  content: string;
-  userId: number;
-  date: string;
-}
+
 interface CurrentUser {
   id: number;
-  notyfi: FriendRequest[];
+  notyfi: notyfiType[];
   friends: { userId: number; status: string }[];
 }
 
@@ -28,7 +25,7 @@ const Notify = () => {
     (state: RootState) => state.users.currentUser
   ) as CurrentUser | null;
   const allUsers = useSelector((state: RootState) => state.users.users);
-  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [friendRequests, setFriendRequests] = useState<notyfiType[]>([]);
 
   useEffect(() => {
     dispatch(getAllUsers());
@@ -59,23 +56,11 @@ const Notify = () => {
       )
         .then(() => {
           message.success("Đã chấp nhận lời mời kết bạn");
+          // Remove the accepted request from the local state
           setFriendRequests(
             friendRequests.filter((request) => request.userId !== userId)
           );
-
-          // Remove the notification from the currentUser's notyfi array
-          if (currentUser.notyfi) {
-            const updatedNotyfi = currentUser.notyfi.filter(
-              (notif) => notif.userId !== userId
-            );
-            dispatch({
-              type: "UPDATE_CURRENT_USER",
-              payload: {
-                ...currentUser,
-                notyfi: updatedNotyfi,
-              },
-            });
-          }
+   
         })
         .catch((error: any) => {
           message.error(
@@ -84,7 +69,6 @@ const Notify = () => {
         });
     }
   };
-
   const handleDecline = (userId: number) => {
     if (currentUser) {
       dispatch(
@@ -95,12 +79,17 @@ const Notify = () => {
       )
         .then(() => {
           message.info("Đã từ chối lời mời kết bạn");
+          
+          // Xóa yêu cầu kết bạn khỏi danh sách hiển thị
           setFriendRequests(
             friendRequests.filter((request) => request.userId !== userId)
           );
+  
+          // Xóa thông báo khỏi notyfi của currentUser
+          
         })
         .catch((error: any) => {
-          message.error("Không thể từ chối lời mờ i kết bạn: " + error.message);
+          message.error("Không thể từ chối lời mời kết bạn: " + error.message);
         });
     }
   };
