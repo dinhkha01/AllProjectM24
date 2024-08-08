@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   Avatar,
@@ -22,19 +22,22 @@ import {
 } from "@ant-design/icons";
 import { RootState } from "../../store";
 import { post, users } from "../../config/interface";
-import { useDispatch } from "react-redux";
-import { rejectFriendRequest, updateFriends, updateReceiverFriends, updateUserNotify } from "../../service/Login-Register/User";
+import {
+  rejectFriendRequest,
+  updateFriends,
+  updateReceiverFriends,
+  updateUserNotify,
+} from "../../service/Login-Register/User";
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
 const { Meta } = Card;
 
-
-
-const ProfileUser= () => {
+const ProfileUser = () => {
   const { userId } = useParams<{ userId: string }>();
   const parsedUserId = userId ? parseInt(userId, 10) : undefined;
-const dispatch= useDispatch()
+  const dispatch = useDispatch();
+
   const allUsers = useSelector(
     (state: RootState) => state.users.users as users[]
   );
@@ -46,14 +49,19 @@ const dispatch= useDispatch()
   const user = allUsers.find((u) => u.id === parsedUserId);
 
   const userPosts = posts.filter((post) => post.userId === user?.id);
+
   const sortedPosts = useMemo(() => {
     return [...userPosts].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-  }, [userPosts]);
+  }, [posts]);
 
   const isFriend = currentUser?.friends?.some(
     (friend) => friend.userId === user?.id && friend.status === "accept"
+  );
+
+  const isPendingFriend = currentUser?.friends?.some(
+    (friend) => friend.userId === user?.id && friend.status === "pending"
   );
 
   const pinkButtonStyle = {
@@ -77,7 +85,6 @@ const dispatch= useDispatch()
       )
         .then(() => {
           message.success("Đã hủy kết bạn");
-       
           dispatch({
             type: "UPDATE_FRIEND_STATUS",
             payload: {
@@ -92,6 +99,7 @@ const dispatch= useDispatch()
         });
     }
   };
+
   const handleAddFriend = (event: React.MouseEvent) => {
     event.preventDefault();
     if (currentUser && user) {
@@ -99,11 +107,11 @@ const dispatch= useDispatch()
         ...(currentUser.friends || []),
         { userId: user.id, status: "pending", add_at: new Date().toISOString() },
       ];
-  
+
       dispatch(updateFriends(newFriends))
         .then(() => {
           message.success("Đã gửi lời mời kết bạn");
-  
+
           // Cập nhật thông báo và bạn bè cho người dùng được mời kết bạn
           const newNotify = [
             ...(user.notyfi || []),
@@ -114,7 +122,7 @@ const dispatch= useDispatch()
             },
           ];
           dispatch(updateUserNotify({ userId: user.id, newNotify }));
-  
+
           // Cập nhật danh sách bạn bè của người nhận
           const newReceiverFriends = [
             ...(user.friends || []),
@@ -133,7 +141,7 @@ const dispatch= useDispatch()
         });
     }
   };
-  
+
   if (!user) {
     return <div>User not found</div>;
   }
@@ -184,165 +192,185 @@ const dispatch= useDispatch()
             </div>
           </div>
           <Row gutter={16} style={{ marginTop: 16 }}>
-         <Col>
-    {isFriend ? (
-      <>
-        <Button style={pinkButtonStyle}>Bạn bè</Button>
-        <Button style={unfriendButtonStyle} onClick={()=>handleUnfriend(user.id)} className="ml-2">Hủy kết bạn</Button>
-      </>
-    ) : (
-      <Button style={pinkButtonStyle}   onClick={handleAddFriend}>Kết bạn</Button>
-    )}
-  </Col>
-</Row>
+            <Col>
+              {isFriend ? (
+                <>
+                  <Button style={pinkButtonStyle}>Bạn bè</Button>
+                  <Button
+                    style={unfriendButtonStyle}
+                    onClick={() => handleUnfriend(user.id)}
+                    className="ml-2"
+                  >
+                    Hủy kết bạn
+                  </Button>
+                </>
+              ) : isPendingFriend ? (
+                <Button style={unfriendButtonStyle} disabled>
+                  Đang chờ xác nhận
+                </Button>
+              ) : (
+                <Button style={pinkButtonStyle} onClick={handleAddFriend}>
+                  Kết bạn
+                </Button>
+              )}
+            </Col>
+          </Row>
         </div>
         <Tabs defaultActiveKey="1" style={{ padding: "0 16px" }}>
           <TabPane tab="Bài viết" key="1">
-            {sortedPosts.map((post) => (
-              <Card
-                key={post.id}
-                style={{ width: "100%", marginBottom: 16 }}
-                actions={[
-                  <div
-                    key="like"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <HeartOutlined
-                      style={{
-                        fontSize: "20px",
-                        marginRight: "5px",
-                        color: "#FF69B4",
-                      }}
-                    />
-                    <span style={{ color: "#FF69B4" }}>Thích</span>
-                  </div>,
-                  <div
-                    key="comment"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <MessageOutlined
-                      style={{
-                        fontSize: "20px",
-                        marginRight: "5px",
-                        color: "#FF69B4",
-                      }}
-                    />
-                    <span style={{ color: "#FF69B4" }}>Bình luận</span>
-                  </div>,
-                  <div
-                    key="share"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <SendOutlined
-                      style={{
-                        fontSize: "20px",
-                        marginRight: "5px",
-                        color: "#FF69B4",
-                      }}
-                    />
-                    <span style={{ color: "#FF69B4" }}>Chia sẻ</span>
-                  </div>,
-                ]}
-              >
-                <Meta
-                  avatar={<Avatar src={user.avatar} />}
-                  title={
+           
+              {sortedPosts
+                .filter(
+                  (post) =>
+                    post.userId === user?.id ||
+                    (isFriend && post.privacy =="public") ||
+                    post.userId === currentUser?.id
+                )
+              .map((post) => (
+                <Card
+                  key={post.id}
+                  style={{ width: "100%", marginBottom: 16 }}
+                  actions={[
                     <div
+                      key="like"
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "space-between",
+                        justifyContent: "center",
                       }}
                     >
-                      <div>
-                        <span style={{ fontWeight: "bold" }}>{user.name}</span>
-                        <span
-                          style={{
-                            fontSize: "12px",
-                            color: "#65676B",
-                            marginLeft: "8px",
-                          }}
-                        >
-                          {new Date(post.date).toLocaleString()}
-                        </span>
-                      </div>
-                      <EllipsisOutlined />
-                    </div>
-                  }
-                />
-                <div style={{ padding: "16px 0" }}>{post.content}</div>
-                {post.img.length > 0 && (
-                  <div style={{ marginTop: "16px" }}>
-                    <Image.PreviewGroup>
+                      <HeartOutlined
+                        style={{
+                          fontSize: "20px",
+                          marginRight: "5px",
+                          color: "#FF69B4",
+                        }}
+                      />
+                      <span style={{ color: "#FF69B4" }}>Thích</span>
+                    </div>,
+                    <div
+                      key="comment"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <MessageOutlined
+                        style={{
+                          fontSize: "20px",
+                          marginRight: "5px",
+                          color: "#FF69B4",
+                        }}
+                      />
+                      <span style={{ color: "#FF69B4" }}>Bình luận</span>
+                    </div>,
+                    <div
+                      key="share"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <SendOutlined
+                        style={{
+                          fontSize: "20px",
+                          marginRight: "5px",
+                          color: "#FF69B4",
+                        }}
+                      />
+                      <span style={{ color: "#FF69B4" }}>Chia sẻ</span>
+                    </div>,
+                  ]}
+                >
+                  <Meta
+                    avatar={<Avatar src={user.avatar} />}
+                    title={
                       <div
                         style={{
-                          display: "grid",
-                          gridGap: "2px",
-                          gridTemplateColumns: `repeat(${Math.min(
-                            post.img.length,
-                            3
-                          )}, 1fr)`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
                         }}
                       >
-                        {post.img.map((imageUrl, index) => (
-                          <div
-                            key={index}
+                        <div>
+                          <span style={{ fontWeight: "bold" }}>{user.name}</span>
+                          <span
                             style={{
-                              position: "relative",
-                              paddingTop: "100%",
-                              overflow: "hidden",
+                              fontSize: "12px",
+                              color: "#65676B",
+                              marginLeft: "8px",
                             }}
                           >
-                            <img
-                              alt={`Post content ${index + 1}`}
-                              src={imageUrl}
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                borderRadius: "4px",
-                              }}
-                            />
-                          </div>
-                        ))}
+                            {new Date(post.date).toLocaleString()}
+                          </span>
+                        </div>
+                        <EllipsisOutlined />
                       </div>
-                    </Image.PreviewGroup>
-                  </div>
-                )}
-                <Input
-                  placeholder="Viết bình luận..."
-                  prefix={
-                    <Avatar
-                      src={currentUser?.avatar}
-                      size={24}
-                      style={{ marginRight: "8px" }}
-                    />
-                  }
-                  style={{
-                    background: "#F0F2F5",
-                    border: "none",
-                    borderRadius: "20px",
-                    padding: "8px 12px",
-                    marginTop: "16px",
-                  }}
-                />
-              </Card>
-            ))}
+                    }
+                  />
+                  <div style={{ padding: "16px 0" }}>{post.content}</div>
+                  {post.img.length > 0 && (
+                    <div style={{ marginTop: "16px" }}>
+                      <Image.PreviewGroup>
+                        <div
+                          style={{
+                            display: "grid",
+                            gridGap: "2px",
+                            gridTemplateColumns: `repeat(${Math.min(
+                              post.img.length,
+                              3
+                            )}, 1fr)`,
+                          }}
+                        >
+                          {post.img.map((imageUrl, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                position: "relative",
+                                paddingTop: "100%",
+                                overflow: "hidden",
+                              }}
+                            >
+                              <img
+                                alt={`Post content ${index + 1}`}
+                                src={imageUrl}
+                                style={{
+                                  position: "absolute",
+                                  top: 0,
+                                  left: 0,
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                  borderRadius: "4px",
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </Image.PreviewGroup>
+                    </div>
+                  )}
+                  <Input
+                    placeholder="Viết bình luận..."
+                    prefix={
+                      <Avatar
+                        src={currentUser?.avatar}
+                        size={24}
+                        style={{ marginRight: "8px" }}
+                      />
+                    }
+                    style={{
+                      background: "#F0F2F5",
+                      border: "none",
+                      borderRadius: "20px",
+                      padding: "8px 12px",
+                      marginTop: "16px",
+                    }}
+                  />
+                </Card>
+              ))}
           </TabPane>
           <TabPane tab="Giới thiệu" key="2">
             <p>Thông tin giới thiệu về {user.name}</p>

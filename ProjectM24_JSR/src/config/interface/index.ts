@@ -27,6 +27,7 @@ export interface post {
   userId: number;
   date: string;
   id: number;
+  privacy: 'public' | 'private';
 }
 export interface GroupMember {
   userId: number;
