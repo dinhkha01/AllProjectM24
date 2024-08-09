@@ -38,7 +38,7 @@ const MenuAdmin = () => {
   };
 
   return (
-    <Box sx={{ width: 250 }} role="presentation">
+    <Box sx={{ width: 200 }} role="presentation">
       <List>
         {menuItems.map((item) => (
           <NavLink

@@ -4,7 +4,7 @@ import { Group, GroupPost } from "../../config/interface";
 import { RootState } from "../../store";
 
 export const allGroups :any= createAsyncThunk("group/allGroups", async () => {
-  const res = await api.get<Group[]>("group");
+  const res = await api.get("group");
   return res.data;
 });
 
