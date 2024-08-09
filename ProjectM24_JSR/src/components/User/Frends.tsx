@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Card, Avatar, Button, Tabs, List, Typography, message } from "antd";
-import { UserOutlined, UserAddOutlined } from "@ant-design/icons";
+import { Card, Avatar, Button, Tabs, List, Typography, message, Input } from "antd";
+import { UserOutlined, UserAddOutlined, SearchOutlined } from "@ant-design/icons";
 import { users } from "../../config/interface";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -37,6 +37,8 @@ const Friends = () => {
 
   const [friends, setFriends] = useState<users[]>([]);
   const [suggestions, setSuggestions] = useState<users[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<users[]>([]);
 
   useEffect(() => {
     dispatch(getAllUsers());
@@ -61,51 +63,53 @@ const Friends = () => {
     }
   }, [currentUser, allUsers]);
 
-  const handleAddFriend = (event: React.MouseEvent, userId: number) => {
-    event.stopPropagation();
-    if (currentUser) {
-      const newFriends = [
-        ...(currentUser.friends || []),
-        { userId: userId, status: "pending", add_at: new Date().toISOString() },
-      ];
 
-      dispatch(updateFriends(newFriends))
-        .then(() => {
-          message.success("Đã gửi lời mời kết bạn");
-          setSuggestions(suggestions.filter((user) => user.id !== userId));
-
-          // Cập nhật thông báo và bạn bè cho người dùng được mời kết bạn
-          const targetUser = allUsers.find((user) => user.id === userId);
-          if (targetUser) {
-            const newNotify = [
-              ...(targetUser.notyfi || []),
-              {
-                userId: currentUser.id,
-                content: ` đã gửi lời mời kết bạn`,
-                add_at: new Date().toISOString(),
-              },
-            ];
-            dispatch(updateUserNotify({ userId, newNotify }));
-
-            // Cập nhật danh sách bạn bè của người nhận
-            const newReceiverFriends = [
-              ...(targetUser.friends || []),
-              {
-                userId: currentUser.id,
-                status: "pending",
-                add_at: new Date().toISOString(),
-              },
-            ];
-            dispatch(
-              updateReceiverFriends({ userId, newFriends: newReceiverFriends })
-            );
-          }
-        })
-        .catch((error: any) => {
-          message.error("Không thể gửi lời mời kết bạn: " + error.message);
-        });
-    }
-  };
+    const handleAddFriend = (event: React.MouseEvent, userId: number) => {
+      event.stopPropagation();
+      if (currentUser) {
+        const newFriends = [
+          ...(currentUser.friends || []),
+          { userId: userId, status: "pending", add_at: new Date().toISOString() },
+        ];
+  
+        dispatch(updateFriends(newFriends))
+          .then(() => {
+            message.success("Đã gửi lời mời kết bạn");
+            setSuggestions(suggestions.filter((user) => user.id !== userId));
+  
+            // Cập nhật thông báo và bạn bè cho người dùng được mời kết bạn
+            const targetUser = allUsers.find((user) => user.id === userId);
+            if (targetUser) {
+              const newNotify = [
+                ...(targetUser.notyfi || []),
+                {
+                  userId: currentUser.id,
+                  content: ` đã gửi lời mời kết bạn`,
+                  add_at: new Date().toISOString(),
+                },
+              ];
+              dispatch(updateUserNotify({ userId, newNotify }));
+  
+              // Cập nhật danh sách bạn bè của người nhận
+              const newReceiverFriends = [
+                ...(targetUser.friends || []),
+                {
+                  userId: currentUser.id,
+                  status: "pending",
+                  add_at: new Date().toISOString(),
+                },
+              ];
+              dispatch(
+                updateReceiverFriends({ userId, newFriends: newReceiverFriends })
+              );
+            }
+          })
+          .catch((error: any) => {
+            message.error("Không thể gửi lời mời kết bạn: " + error.message);
+          });
+      }
+    };
+  
 
   const handleUserClick = (userId: number) => {
     navigate(`/user/${userId}`);
@@ -141,6 +145,14 @@ const Friends = () => {
     </List.Item>
   );
 
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    const results = allUsers.filter(
+      (user) => user.name.toLowerCase().includes(value.toLowerCase())
+    );
+    setSearchResults(results);
+  };
+
   return (
     <Card>
       <StyledTabs defaultActiveKey="1">
@@ -158,6 +170,20 @@ const Friends = () => {
             itemLayout="horizontal"
             dataSource={suggestions}
             renderItem={(user) => renderUserItem(user, true)}
+          />
+        </TabPane>
+        <TabPane tab="Tìm kiếm" key="3">
+          <Title level={4}>Tìm kiếm bạn bè</Title>
+          <Input
+            placeholder="Tìm kiếm theo tên"
+            prefix={<SearchOutlined />}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{ marginBottom: 16 }}
+          />
+          <List
+            itemLayout="horizontal"
+            dataSource={searchResults}
+            renderItem={(user) => renderUserItem(user, !friends.some(friend => friend.id === user.id))}
           />
         </TabPane>
       </StyledTabs>

@@ -7,9 +7,12 @@ export interface users {
   role: boolean;
   avatar: string;
   banner: string;
+  dob:string;
+  address:string
   friends: FriendType[];
   notyfi: notyfiType[];
 }
+
 export type FriendType = {
   userId: number;
   status: "pending" | "accept" | "blocked";
@@ -20,6 +23,7 @@ export type notyfiType = {
   content: string;
   date: string;
 };
+/////////////////////////////////////////////////
 export interface post {
   content: string;
   img: string[];
@@ -27,8 +31,13 @@ export interface post {
   userId: number;
   date: string;
   id: number;
+  hiddenBy:number[]
   privacy: 'public' | 'private';
 }
+
+
+
+////////////////////////////////////////////
 export interface GroupMember {
   userId: number;
   role:boolean;
@@ -45,7 +54,6 @@ export interface GroupPost {
 
 export interface Group {
   id: number;
-  userId:number;
   groupName: string;
   avatar: string;
   coverimg: string;

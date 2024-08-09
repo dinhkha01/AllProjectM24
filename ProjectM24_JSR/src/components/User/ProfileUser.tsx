@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
@@ -12,6 +12,7 @@ import {
   Typography,
   Input,
   message,
+  List,
 } from "antd";
 import {
   UserOutlined,
@@ -47,8 +48,24 @@ const ProfileUser = () => {
   );
 
   const user = allUsers.find((u) => u.id === parsedUserId);
+  const [friends, setFriends] = useState<any[]>([]);
+  const [photos, setPhotos] = useState<any[]>([]);
 
   const userPosts = posts.filter((post) => post.userId === user?.id);
+  useEffect(() => {
+    if (user?.id) {
+      const userFriends = user.friends
+        .map(friend => allUsers.find(u => u.id === friend.userId))
+        .filter((friend): friend is users => friend !== undefined);
+
+      setFriends(userFriends);
+
+      const userPhotos = posts
+        .filter(post => post.userId === user.id && post.img.length > 0)
+        .flatMap(post => post.img);
+      setPhotos(userPhotos);
+    }
+  }, [user, posts, allUsers]);
 
   const sortedPosts = useMemo(() => {
     return [...userPosts].sort(
@@ -196,8 +213,9 @@ const ProfileUser = () => {
               {isFriend ? (
                 <>
                   <Button style={pinkButtonStyle}>Bạn bè</Button>
+
                   <Button
-                    style={unfriendButtonStyle}
+                    style={pinkButtonStyle}
                     onClick={() => handleUnfriend(user.id)}
                     className="ml-2"
                   >
@@ -218,14 +236,14 @@ const ProfileUser = () => {
         </div>
         <Tabs defaultActiveKey="1" style={{ padding: "0 16px" }}>
           <TabPane tab="Bài viết" key="1">
-           
-              {sortedPosts
-                .filter(
-                  (post) =>
-                    post.userId === user?.id ||
-                    (isFriend && post.privacy =="public") ||
-                    post.userId === currentUser?.id
-                )
+
+            {sortedPosts
+              .filter(
+                (post) =>
+                  post.userId === user?.id ||
+                  (isFriend && post.privacy == "public") ||
+                  post.userId === currentUser?.id
+              )
               .map((post) => (
                 <Card
                   key={post.id}
@@ -376,10 +394,35 @@ const ProfileUser = () => {
             <p>Thông tin giới thiệu về {user.name}</p>
           </TabPane>
           <TabPane tab="Bạn bè" key="3">
-            <p>Danh sách bạn bè của {user.name}</p>
+            <List
+              grid={{ gutter: 16, column: 3 }}
+              dataSource={friends}
+              renderItem={(friend) => (
+                <List.Item>
+                  <Card>
+                    <Card.Meta
+                      avatar={<Avatar src={friend.avatar} />}
+                      title={friend.name}
+                    />
+                  </Card>
+                </List.Item>
+              )}
+            />
           </TabPane>
           <TabPane tab="Ảnh" key="4">
-            <p>Ảnh của {user.name}</p>
+            <List
+              grid={{ gutter: 16, column: 4 }}
+              dataSource={photos}
+              renderItem={(photo) => (
+                <List.Item>
+                  <Image
+                    src={photo}
+                    alt={`Photo`}
+                    style={{ width: '100%', height: 200, objectFit: 'cover' }}
+                  />
+                </List.Item>
+              )}
+            />
           </TabPane>
         </Tabs>
       </Card>

@@ -80,8 +80,8 @@ export const createGroupPost: any = createAsyncThunk(
 );
 export const addUserInGroup: any = createAsyncThunk(
   "group/addUserInGroup",
-  async ({ groupId, userId }: { groupId: number; userId: number, }, { getState, rejectWithValue }) => {
-    try {
+  async ({ groupId, userId }: { groupId: number; userId: number, }, { getState }) => {
+
       const state: RootState = getState() as RootState;
       const group = state.group.groups.find(g => g.id === groupId);
 
@@ -102,9 +102,7 @@ export const addUserInGroup: any = createAsyncThunk(
       });
 
       return { groupId, member: newMember, updatedGroup: response.data };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || "An error occurred");
-    }
+  
   }
 );
 export const createGroup: any = createAsyncThunk(

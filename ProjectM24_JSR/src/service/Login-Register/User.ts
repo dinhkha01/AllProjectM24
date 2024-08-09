@@ -73,10 +73,22 @@
       return res.data;
     }
   );
+  export const pushInfor : any= createAsyncThunk("user/infor",async({name,dob,address,phone}:{name:string;dob:string;address:string;phone:string})=>{
+    const idUser= localStorage.getItem("userId")
+    const res= await api.patch("users/"+ idUser,{name, dob, address, phone})
+    return res.data
+  });
+
+
+
   export const updateFriendsApi = async (userId: number, friends: any[]) => {
     const res = await api.patch(`users/${userId}`, { friends });
     return res.data;
   };
+
+
+
+
   export const updateFriends: any = createAsyncThunk(
     "user/updateFriends",
     async (newFriends: any[], { getState, rejectWithValue }) => {
@@ -273,6 +285,9 @@
             banner: action.payload.banner,
             friends: action.payload.friends,
             notyfi: action.payload.notyfi,
+            dob:action.payload.dob,
+            address:action.payload.address
+
           };
         })
         .addCase(pushAvatar.fulfilled, (state, action) => {
@@ -287,7 +302,7 @@
         })
         .addCase(updateFriends.fulfilled, (state, action) => {
           if (state.currentUser) {
-            console.log("action.payload", action.payload);
+           
 
             state.currentUser.friends = action.payload.friends;
           }
@@ -344,6 +359,14 @@
           if (state.currentUser && state.currentUser.id === currentUser.id) {
             state.currentUser = currentUser;
           }
+        }). addCase(pushInfor.fulfilled,(state,action)=>{
+          if(state.currentUser){
+            state.currentUser.name = action.payload.name;
+    state.currentUser.dob = action.payload.dob;
+    state.currentUser.address = action.payload.address;
+    state.currentUser.phone = action.payload.phone;
+          }
+       
         })
     },
   });

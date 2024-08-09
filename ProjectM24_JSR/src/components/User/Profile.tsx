@@ -16,6 +16,8 @@ import {
   message,
   List,
   Radio,
+  Divider,
+  DatePicker,
 } from "antd";
 import {
   UserOutlined,
@@ -27,15 +29,18 @@ import {
   SendOutlined,
   PlusOutlined,
   UploadOutlined,
+  CalendarOutlined,
+  HomeOutlined,
+  PhoneOutlined,
 } from "@ant-design/icons";
 import { RootState } from "../../store";
 import { createPost, getAllPost } from "../../service/Login-Register/Post";
 import { storage } from "../../config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-import { pushAvatar, pushBanner } from "../../service/Login-Register/User";
+import { pushAvatar, pushBanner, pushInfor } from "../../service/Login-Register/User";
 import { FriendType } from "../../config/interface";
-
+import dayjs from 'dayjs';
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
 const { Meta } = Card;
@@ -51,7 +56,39 @@ const Profile = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
   const [photos, setPhotos] = useState<any[]>([]);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editForm] = Form.useForm();
 
+  const showEditModal = () => {
+    const dobDayjs = user?.dob ? dayjs(user.dob, 'DD/MM/YY') : null;
+    editForm.setFieldsValue({
+      name: user?.name,
+      dob: dobDayjs,
+      phone: user?.phone,
+      address: user?.address,
+    });
+    setIsEditModalVisible(true);
+  };
+
+  const handleEditCancel = () => {
+    setIsEditModalVisible(false);
+  };
+
+  const handleEditSubmit = async () => {
+    try {
+      const values = await editForm.validateFields();
+      if (values.dob) {
+        values.dob = dayjs(values.dob).format('DD/MM/YY');
+      }
+      // Dispatch action to update user info
+      dispatch(pushInfor(values));
+      setIsEditModalVisible(false);
+      message.success("Thông tin đã được cập nhật thành công");
+    } catch (error) {
+      console.error("Error updating user info:", error);
+      message.error("Có lỗi xảy ra khi cập nhật thông tin");
+    }
+  };
   useEffect(() => {
     if (user?.id) {
       const userFriends = user.friends
@@ -232,7 +269,7 @@ const Profile = () => {
               <Button style={pinkButtonStyle}>Thêm vào tin</Button>
             </Col>
             <Col>
-              <Button icon={<EditOutlined />} style={pinkButtonStyle}>
+              <Button icon={<EditOutlined />} style={pinkButtonStyle} onClick={showEditModal}>
                 Chỉnh sửa trang cá nhân
               </Button>
             </Col>
@@ -405,8 +442,71 @@ const Profile = () => {
               </Card>
             ))}
           </TabPane>
+
+
           <TabPane tab="Giới thiệu" key="2">
-            <p>Thông tin giới thiệu về {user?.name}</p>
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Card>
+                  <Typography.Title level={4}>Thông tin cá nhân</Typography.Title>
+                  <Divider />
+                  <Row gutter={[16, 16]}>
+                    <Col span={12}>
+                      <List
+                        itemLayout="horizontal"
+                        dataSource={[
+                          {
+                            title: "Họ và tên",
+                            description: user?.name,
+                            icon: <UserOutlined style={{ fontSize: '24px', color: '#FF69B4' }} />
+                          },
+                          {
+                            title: "Ngày sinh",
+                            description: user?.dob,
+                            icon: <CalendarOutlined style={{ fontSize: '24px', color: '#FF69B4' }} />
+                          }
+                        ]}
+                        renderItem={(item) => (
+                          <List.Item>
+                            <List.Item.Meta
+                              avatar={<div style={{ marginTop: '8px' }}>{item.icon}</div>}
+                              title={<Typography.Text strong>{item.title}</Typography.Text>}
+                              description={item.description}
+                            />
+                          </List.Item>
+                        )}
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <List
+                        itemLayout="horizontal"
+                        dataSource={[
+                          {
+                            title: "Số điện thoại",
+                            description: user?.phone,
+                            icon: <PhoneOutlined style={{ fontSize: '24px', color: '#FF69B4' }} />
+                          },
+                          {
+                            title: "Địa chỉ",
+                            description: user?.address,
+                            icon: <HomeOutlined style={{ fontSize: '24px', color: '#FF69B4' }} />
+                          },
+                        ]}
+                        renderItem={(item) => (
+                          <List.Item>
+                            <List.Item.Meta
+                              avatar={<div style={{ marginTop: '8px' }}>{item.icon}</div>}
+                              title={<Typography.Text strong>{item.title}</Typography.Text>}
+                              description={item.description}
+                            />
+                          </List.Item>
+                        )}
+                      />
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
+            </Row>
           </TabPane>
           <TabPane tab="Bạn bè" key="3">
             <List
@@ -418,7 +518,7 @@ const Profile = () => {
                     <Card.Meta
                       avatar={<Avatar src={friend.avatar} />}
                       title={friend.name}
-                      
+
                     />
                   </Card>
                 </List.Item>
@@ -479,6 +579,59 @@ const Profile = () => {
               <Radio value="public">Công khai</Radio>
               <Radio value="private">Riêng tư</Radio>
             </Radio.Group>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="Chỉnh sửa thông tin cá nhân"
+        visible={isEditModalVisible}
+        onCancel={handleEditCancel}
+        footer={[
+          <Button key="cancel" onClick={handleEditCancel} style={pinkButtonStyle}>
+            Hủy
+          </Button>,
+          <Button
+            key="submit"
+            onClick={handleEditSubmit}
+            style={pinkButtonStyle}
+          >
+            Cập nhật
+          </Button>,
+        ]}
+      >
+        <Form form={editForm} layout="vertical">
+          <Form.Item
+            name="name"
+            label="Họ và tên"
+            rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="dob"
+            label="Ngày sinh"
+            rules={[{ required: true, message: "Vui lòng chọn ngày sinh" }]}
+          >
+            <DatePicker
+              style={{ width: '100%' }}
+              format="DD/MM/YY"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="phone"
+            label="Số điện thoại"
+            rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="address"
+            label="Địa chỉ"
+            rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+          >
+            <Input.TextArea />
           </Form.Item>
         </Form>
       </Modal>
