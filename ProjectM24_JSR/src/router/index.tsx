@@ -15,6 +15,11 @@ import Notify from "../components/User/Notify";
 import ProfileUser from "../components/User/ProfileUser";
 import Group from "../components/User/Group";
 import ProfileGroup from "../components/User/ProfileGroup";
+import DashBoard from "../components/Admin/DashBoard";
+import AdminUsers from "../components/Admin/AdminUsers";
+import AdminComments from "../components/Admin/AdminComments";
+import AdminGroup from "../components/Admin/AdminGroup";
+import AdminPost from "../components/Admin/AdminPost";
 
 const Router = () => {
   return (
@@ -33,7 +38,16 @@ const Router = () => {
           <Route path="user/:userId" element={<ProfileUser />} />
         </Route>
 
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin" element={<Admin />} > 
+        <Route index element={<DashBoard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="comments" element={<AdminComments />} />
+          <Route path="groups" element={<AdminGroup />} />
+          <Route path="posts" element={<AdminPost />} />
+       
+
+
+         </Route>
       </Routes>
     </div>
   );

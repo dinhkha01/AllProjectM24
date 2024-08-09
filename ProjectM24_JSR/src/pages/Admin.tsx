@@ -6,6 +6,7 @@ import TrangChu from "../components/User/TrangChu";
 import { Outlet } from "react-router-dom";
 import { Content, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
+import MenuAdmin from "../components/Admin/MenuAdmin";
 
 
 const Admin = () => {
@@ -33,7 +34,7 @@ const Admin = () => {
           left: 0,
         }}
       >
-        <MenuUser />
+        <MenuAdmin />
       </Sider>
       <Layout style={{ marginLeft: 200 }}>
         <Content
