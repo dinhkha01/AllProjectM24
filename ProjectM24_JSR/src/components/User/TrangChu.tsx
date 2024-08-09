@@ -38,6 +38,8 @@ const TrangChu = () => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [currentPostImages, setCurrentPostImages] = useState<string[]>([]);
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const posts = useSelector((state: RootState) => state.post.post);
@@ -158,6 +160,7 @@ const TrangChu = () => {
       await dispatch(deletePost(postId));
       message.success('Bài viết đã được xóa thành công');
       dispatch(getAllPost());
+      setOptionsModalVisible(false);
     } catch (error) {
       console.error('Error deleting post:', error);
       message.error('Có lỗi xảy ra khi xóa bài viết');
@@ -172,6 +175,7 @@ const TrangChu = () => {
         await dispatch(updatePostPrivacy({ postId, privacy: newPrivacy }));
         message.success('Trạng thái bài viết đã được cập nhật');
         dispatch(getAllPost());
+        setOptionsModalVisible(false);
       }
     } catch (error) {
       console.error('Error updating post privacy:', error);
@@ -230,7 +234,7 @@ const TrangChu = () => {
         .map((post) => (
           <Card
             key={post.id}
-            style={{ width: "100%" }}
+            style={{ width: "100%", position: "relative" }}
             onClick={() => handlePostClick(post.id)}
             actions={[
               <div
@@ -268,110 +272,95 @@ const TrangChu = () => {
                 <SendOutlined style={{ fontSize: "20px", marginRight: "5px" }} />
                 <span>Chia sẻ</span>
               </div>,
-              currentUser?.id === post.userId && (
+            ]}
+          >
+            {currentUser?.id === post.userId && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  cursor: "pointer",
+                  zIndex: 1,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPostId(post.id);
+                  setOptionsModalVisible(true);
+                }}
+              >
+                <EllipsisOutlined style={{ fontSize: "20px" }} />
+              </div>
+            )}
+            
+            <Meta
+              avatar={<Avatar src={getUserAvatar(post.userId)}  />}
+              title={
                 <div
-                  key="options"
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const menu = (
-                      <Menu
-                        onClick={({ key }) => handlePostOptionClick(post.id, key)}
-                        items={[
-                          { key: 'privacy', label: post.privacy === 'public' ? 'Đổi thành riêng tư' : 'Đổi thành công khai' },
-                          { key: 'delete', label: 'Xóa bài viết' },
-                        ]}
-                      />
-                    );
-                    Modal.info({
-                      title: 'Lựa chọn',
-                      content: menu,
-                      onOk() {},
-                      onCancel() {},
-                    });
+                    justifyContent: "space-between",
                   }}
                 >
-                  <EllipsisOutlined style={{ fontSize: "20px" }} />
-                </div>
-              ),
-            ]}
-          >
-            
-            <Meta
-                  avatar={<Avatar src={getUserAvatar(post.userId)}  />}
-                  title={
-                    <div
+                  <div>
+                    <span style={{ fontWeight: "bold" }}>{getUserName(post.userId)}</span>
+                    <span
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
+                        fontSize: "12px",
+                        color: "#65676B",
+                        marginLeft: "8px",
                       }}
                     >
-                      <div>
-                        <span style={{ fontWeight: "bold" }}>{getUserName(post.userId)}</span>
-                        <span
+                      {new Date(post.date).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              }
+            />
+            <div style={{ padding: "16px 0" }}>{post.content}</div>
+            <div>
+              {post.img.length > 0 && (
+                <div style={{ marginTop: "16px" }}>
+                  <Image.PreviewGroup>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridGap: "2px",
+                        gridTemplateColumns: `repeat(${Math.min(
+                          post.img.length,
+                          3
+                        )}, 1fr)`,
+                      }}
+                    >
+                      {post.img.map((imageUrl, index) => (
+                        <div
+                          key={index}
                           style={{
-                            fontSize: "12px",
-                            color: "#65676B",
-                            marginLeft: "8px",
+                            position: "relative",
+                            paddingTop: "100%",
+                            overflow: "hidden",
                           }}
                         >
-                          {new Date(post.date).toLocaleString()}
-                        </span>
-                      </div>
-                      <EllipsisOutlined />
-                    </div>
-                  }
-                />
-                 <div style={{ padding: "16px 0" }}>{post.content}</div>
-            <div>
-            {post.img.length > 0 && (
-                  <div style={{ marginTop: "16px" }}>
-                    <Image.PreviewGroup>
-                      <div
-                        style={{
-                          display: "grid",
-                          gridGap: "2px",
-                          gridTemplateColumns: `repeat(${Math.min(
-                            post.img.length,
-                            3
-                          )}, 1fr)`,
-                        }}
-                      >
-                        {post.img.map((imageUrl, index) => (
-                          <div
-                            key={index}
+                          <img
+                            alt={`Post content ${index + 1}`}
+                            src={imageUrl}
                             style={{
-                              position: "relative",
-                              paddingTop: "100%",
-                              overflow: "hidden",
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              borderRadius: "4px",
                             }}
-                          >
-                            <img
-                              alt={`Post content ${index + 1}`}
-                              src={imageUrl}
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                borderRadius: "4px",
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </Image.PreviewGroup>
-                  </div>
-                )}
-             
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </Image.PreviewGroup>
+                </div>
+              )}
             </div>
           </Card>
         ))}
@@ -415,6 +404,29 @@ const TrangChu = () => {
         onCancel={handlePreviewClose}
       >
         <Image src={previewImage} width="100%" />
+      </Modal>
+
+      <Modal
+        visible={optionsModalVisible}
+        onCancel={() => setOptionsModalVisible(false)}
+        footer={null}
+      >
+        <Menu
+          onClick={({ key }) => {
+            if (selectedPostId) {
+              handlePostOptionClick(selectedPostId, key);
+            }
+          }}
+          items={[
+            { 
+              key: 'privacy', 
+              label: selectedPostId && posts.find(p => p.id === selectedPostId)?.privacy === "public" 
+                ? "Đổi trạng thái thành riêng tư" 
+                : "Đổi trạng thái thành công khai"
+            },
+            { key: 'delete', label: 'Xóa bài viết' },
+          ]}
+        />
       </Modal>
     </div>
   );

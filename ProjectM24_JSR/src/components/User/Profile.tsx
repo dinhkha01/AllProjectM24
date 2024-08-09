@@ -18,6 +18,7 @@ import {
   Radio,
   Divider,
   DatePicker,
+  Menu,
 } from "antd";
 import {
   UserOutlined,
@@ -34,13 +35,13 @@ import {
   PhoneOutlined,
 } from "@ant-design/icons";
 import { RootState } from "../../store";
-import { createPost, getAllPost } from "../../service/Login-Register/Post";
+import { createPost, getAllPost, deletePost, updatePostPrivacy } from "../../service/Login-Register/Post";
 import { storage } from "../../config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { pushAvatar, pushBanner, pushInfor } from "../../service/Login-Register/User";
-import { FriendType } from "../../config/interface";
 import dayjs from 'dayjs';
+
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
 const { Meta } = Card;
@@ -58,6 +59,8 @@ const Profile = () => {
   const [photos, setPhotos] = useState<any[]>([]);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editForm] = Form.useForm();
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
   const showEditModal = () => {
     const dobDayjs = user?.dob ? dayjs(user.dob, 'DD/MM/YY') : null;
@@ -80,7 +83,6 @@ const Profile = () => {
       if (values.dob) {
         values.dob = dayjs(values.dob).format('DD/MM/YY');
       }
-      // Dispatch action to update user info
       dispatch(pushInfor(values));
       setIsEditModalVisible(false);
       message.success("Thông tin đã được cập nhật thành công");
@@ -89,6 +91,7 @@ const Profile = () => {
       message.error("Có lỗi xảy ra khi cập nhật thông tin");
     }
   };
+
   useEffect(() => {
     if (user?.id) {
       const userFriends = user.friends
@@ -96,7 +99,6 @@ const Profile = () => {
         .filter((friend): friend is any => friend !== undefined);
 
       setFriends(userFriends);
-
 
       const userPhotos = posts
         .filter(post => post.userId === user.id && post.img.length > 0)
@@ -186,6 +188,47 @@ const Profile = () => {
     const url = await getDownloadURL(imageRef);
     dispatch(pushBanner(url));
     message.success("Ảnh bìa đã được cập nhật");
+  };
+
+  const handlePostOptionClick = (postId: number, option: string) => {
+    switch (option) {
+      case 'delete':
+        handleDeletePost(postId);
+        break;
+      case 'privacy':
+        handleUpdatePostPrivacy(postId);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleDeletePost = async (postId: number) => {
+    try {
+      await dispatch(deletePost(postId));
+      message.success('Bài viết đã được xóa thành công');
+      dispatch(getAllPost());
+      setOptionsModalVisible(false);
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      message.error('Có lỗi xảy ra khi xóa bài viết');
+    }
+  };
+
+  const handleUpdatePostPrivacy = async (postId: number) => {
+    try {
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        const newPrivacy = post.privacy === 'public' ? 'private' : 'public';
+        await dispatch(updatePostPrivacy({ postId, privacy: newPrivacy }));
+        message.success('Trạng thái bài viết đã được cập nhật');
+        dispatch(getAllPost());
+        setOptionsModalVisible(false);
+      }
+    } catch (error) {
+      console.error('Error updating post privacy:', error);
+      message.error('Có lỗi xảy ra khi cập nhật trạng thái bài viết');
+    }
   };
 
   const pinkButtonStyle = {
@@ -299,7 +342,7 @@ const Profile = () => {
             {sortedPosts.map((post) => (
               <Card
                 key={post.id}
-                style={{ width: "100%", marginBottom: 16 }}
+                style={{ width: "100%", marginBottom: 16, position: "relative" }}
                 actions={[
                   <div
                     key="like"
@@ -354,6 +397,22 @@ const Profile = () => {
                   </div>,
                 ]}
               >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "10px",
+                    right: "10px",
+                    cursor: "pointer",
+                    zIndex: 1,
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPostId(post.id);
+                    setOptionsModalVisible(true);
+                  }}
+                >
+                  <EllipsisOutlined style={{ fontSize: "20px" }} />
+                </div>
                 <Meta
                   avatar={<Avatar src={user?.avatar} />}
                   title={
@@ -376,7 +435,6 @@ const Profile = () => {
                           {new Date(post.date).toLocaleString()}
                         </span>
                       </div>
-                      <EllipsisOutlined />
                     </div>
                   }
                 />
@@ -442,7 +500,6 @@ const Profile = () => {
               </Card>
             ))}
           </TabPane>
-
 
           <TabPane tab="Giới thiệu" key="2">
             <Row gutter={[16, 16]}>
@@ -518,7 +575,6 @@ const Profile = () => {
                     <Card.Meta
                       avatar={<Avatar src={friend.avatar} />}
                       title={friend.name}
-
                     />
                   </Card>
                 </List.Item>
@@ -582,6 +638,7 @@ const Profile = () => {
           </Form.Item>
         </Form>
       </Modal>
+
       <Modal
         title="Chỉnh sửa thông tin cá nhân"
         visible={isEditModalVisible}
@@ -634,6 +691,29 @@ const Profile = () => {
             <Input.TextArea />
           </Form.Item>
         </Form>
+      </Modal>
+
+      <Modal
+        visible={optionsModalVisible}
+        onCancel={() => setOptionsModalVisible(false)}
+        footer={null}
+      >
+        <Menu
+          onClick={({ key }) => {
+            if (selectedPostId) {
+              handlePostOptionClick(selectedPostId, key);
+            }
+          }}
+          items={[
+            { 
+              key: 'privacy', 
+              label: selectedPostId && posts.find(p => p.id === selectedPostId)?.privacy === "public" 
+                ? "Đổi trạng thái thành riêng tư" 
+                : "Đổi trạng thái thành công khai"
+            },
+            { key: 'delete', label: 'Xóa bài viết' },
+          ]}
+        />
       </Modal>
     </div>
   );
