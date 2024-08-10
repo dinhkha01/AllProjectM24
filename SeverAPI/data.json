@@ -13,7 +13,8 @@
       "age": "",
       "address": "a",
       "friends": [],
-      "notyfi": []
+      "notyfi": [],
+      "status": true
     },
     {
       "id": 2,
@@ -34,7 +35,8 @@
           "add_at": "2024-08-09T01:53:19.046Z"
         }
       ],
-      "notyfi": []
+      "notyfi": [], "status": true
+
     },
     {
       "id": 3,
@@ -55,7 +57,7 @@
           "add_at": "2024-08-09T01:53:19.080Z"
         }
       ],
-      "notyfi": []
+      "notyfi": [], "status": true
     },
     {
       "id": 4,
@@ -70,7 +72,7 @@
       "age": "",
       "address": "",
       "friends": [],
-      "notyfi": []
+      "notyfi": [], "status": true
     },
     {
       "email": "bin1@vn.com",
@@ -85,7 +87,7 @@
       "address": "",
       "friends": [],
       "notyfi": [],
-      "id": 5
+      "id": 5, "status": true
     },
     {
       "email": "kha8112k3@gmail.com",
@@ -101,7 +103,33 @@
       "address": "",
       "friends": [],
       "notyfi": [],
-      "id": 6
+      "id": 6, "status": true
+    },
+    {
+      "email": "a@gmail.com",
+      "password": "$2a$10$Knsxm6nUQcBta4mbBc/GA.RHBsAXYdcw6HjHUVvo6jYBsd00nD0Py",
+      "name": "Jacob Marcus",
+      "phone": "0902956579",
+      "confirmPassword": "123456",
+      "role": false,
+      "avatar": "",
+      "banner": "",
+      "friends": [],
+      "notyfi": [],
+      "id": 7, "status": true
+    },
+    {
+      "email": "tho@gmail.com",
+      "password": "$2a$10$O8bNK27y1K3J7X7XkGWzp.B5XHeC8G/hZEp5Op.O9ngTXa/ksF59.",
+      "name": "thorr",
+      "phone": "0902956579",
+      "confirmPassword": "123456",
+      "role": false,
+      "avatar": "",
+      "banner": "",
+      "friends": [],
+      "notyfi": [],
+      "id": 8, "status": true
     }
   ],
   "post": [

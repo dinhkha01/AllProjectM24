@@ -24,7 +24,7 @@ const Admin = () => {
       >
         <MenuAdmin />
       </Sider>
-      <Layout style={{ marginLeft: 200 }}>
+      <Layout style={{ marginLeft: 195 }}>
         <Header
           style={{
             padding: 0,

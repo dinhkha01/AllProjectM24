@@ -11,6 +11,7 @@ export interface users {
   address:string
   friends: FriendType[];
   notyfi: notyfiType[];
+  status: boolean
 }
 
 export type FriendType = {

@@ -38,33 +38,64 @@ const MenuAdmin = () => {
   };
 
   return (
-    <Box sx={{ width: 200 }} role="presentation">
+    <Box 
+      sx={{ 
+        width: 200, 
+        backgroundColor: "#FFF0F5", // Light pink background
+        height: "100%",
+      }} 
+      role="presentation"
+    >
       <List>
         {menuItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             style={{
-              color: activeItem === item.to ? "#FF69B4" : "inherit",
+              color: "inherit",
               textDecoration: "none",
             }}
             onClick={() => handleItemClick(item.to)}
           >
-            <ListItem button>
+            <ListItem 
+              button 
+              sx={{
+                backgroundColor: activeItem === item.to ? "#FF69B4" : "transparent",
+                "&:hover": {
+                  backgroundColor: "#FFB6C1", // Lighter pink on hover
+                },
+              }}
+            >
               <ListItemIcon
-                sx={{ color: activeItem === item.to ? "#FF69B4" : "inherit" }}
+                sx={{ color: activeItem === item.to ? "#FFF" : "#FF69B4" }}
               >
                 {item.icon}
               </ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemText 
+                primary={item.text} 
+                sx={{ 
+                  color: activeItem === item.to ? "#FFF" : "#000",
+                  "& .MuiTypography-root": {
+                    fontWeight: activeItem === item.to ? "bold" : "normal",
+                  }
+                }}
+              />
             </ListItem>
           </NavLink>
         ))}
       </List>
       <Divider />
       <List>
-        <ListItem button onClick={handleLogout}>
-          <ListItemIcon>
+        <ListItem 
+          button 
+          onClick={handleLogout}
+          sx={{
+            "&:hover": {
+              backgroundColor: "#FFB6C1", // Lighter pink on hover
+            },
+          }}
+        >
+          <ListItemIcon sx={{ color: "#FF69B4" }}>
             <LogoutIcon />
           </ListItemIcon>
           <ListItemText primary="Đăng Xuất" />
