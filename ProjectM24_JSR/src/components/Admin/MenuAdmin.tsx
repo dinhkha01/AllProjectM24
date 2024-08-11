@@ -20,8 +20,8 @@ const MenuAdmin = () => {
   const [activeItem, setActiveItem] = useState(location.pathname);
 
   const menuItems = [
-    { to: "", icon: <DashboardIcon />, text: "Dashboard" },
-    { to: "users", icon: <PeopleIcon />, text: "Quản lý người dùng" },
+ 
+    { to: "", icon: <PeopleIcon />, text: "Quản lý người dùng" },
     { to: "posts", icon: <PostAddIcon />, text: "Quản lý bài đăng" },
     { to: "groups", icon: <GroupIcon />, text: "Quản lý nhóm" },
     { to: "comments", icon: <CommentIcon />, text: "Quản lý bình luận" },

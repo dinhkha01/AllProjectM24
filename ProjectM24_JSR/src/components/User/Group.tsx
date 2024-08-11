@@ -46,12 +46,14 @@ const Group = () => {
         groupName: newGroupName,
         avatar: "",
         coverimg: "",
+        dateAt: new Date().toISOString(),
         members: [{
           userId: userId,
           role: true,
           dateJoin: new Date().toISOString()
         }],
         postGroup: [],
+        status:true,
       };
       dispatch(createGroup(newGroup));
       setNewGroupName("");

@@ -39,8 +39,8 @@ const Router = () => {
         </Route>
 
         <Route path="/admin" element={<Admin />} > 
-        <Route index element={<DashBoard />} />
-          <Route path="users" element={<AdminUsers />} />
+        {/* <Route index element={<DashBoard />} /> */}
+          <Route index  element={<AdminUsers />} />
           <Route path="comments" element={<AdminComments />} />
           <Route path="groups" element={<AdminGroup />} />
           <Route path="posts" element={<AdminPost />} />

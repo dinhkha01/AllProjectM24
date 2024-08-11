@@ -8,6 +8,7 @@ export interface users {
   avatar: string;
   banner: string;
   dob:string;
+  date:string;
   address:string
   friends: FriendType[];
   notyfi: notyfiType[];
@@ -32,7 +33,6 @@ export interface post {
   userId: number;
   date: string;
   id: number;
-  hiddenBy:number[]
   privacy: 'public' | 'private';
 }
 
@@ -56,8 +56,10 @@ export interface GroupPost {
 export interface Group {
   id: number;
   groupName: string;
+  dateAt:string;
   avatar: string;
   coverimg: string;
+  status:boolean
   members: GroupMember[];
   postGroup: GroupPost[];
 }

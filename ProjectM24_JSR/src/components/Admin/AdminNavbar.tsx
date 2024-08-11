@@ -25,7 +25,7 @@ const AdminNavbar = () => {
 
 
   const stats = [
-    { title: "Total Posts", value: posts.length, icon: ArticleIcon, color: '#2196f3' },
+    { title: "Total Posts", value: posts.length, icon: ArticleIcon, color: '#2196f3', },
     { title: "Total Users", value: users.length, icon: PersonIcon, color: '#ff9800' },
     { title: "Total Groups", value: groups.length, icon: GroupIcon, color: '#e91e63' },
   ];
