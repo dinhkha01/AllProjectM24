@@ -56,13 +56,17 @@ const ProfileGroup = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [localAvatar, setLocalAvatar] = useState(group?.avatar);
+const [localCoverImg, setLocalCoverImg] = useState(group?.coverimg);
 
-  useEffect(() => {
-    const updatedGroup = allGroups.find((g) => g.id === parsedGroupId);
-    if (updatedGroup) {
-      setGroups(updatedGroup);
-    }
-  }, [allGroups, parsedGroupId]);
+useEffect(() => {
+  const updatedGroup = allGroups.find((g) => g.id === parsedGroupId);
+  if (updatedGroup) {
+    setGroups(updatedGroup);
+    setLocalAvatar(updatedGroup.avatar);
+    setLocalCoverImg(updatedGroup.coverimg);
+  }
+}, [allGroups, parsedGroupId]);
 
   const sortedPosts = useMemo(() => {
     return [...(group?.postGroup || [])].sort(
@@ -83,11 +87,12 @@ const ProfileGroup = () => {
     const imageRef = ref(storage, `group-avatars/${group.id}`);
     await uploadBytes(imageRef, file);
     const url = await getDownloadURL(imageRef);
-
+  
     dispatch(pushAvatar({ groupId: group.id, avatar: url }));
+    setLocalAvatar(url); // Cập nhật state local
     message.success("Ảnh đại diện nhóm đã được cập nhật");
   };
-
+  
   const handleCoverUpload = async (file: RcFile) => {
     if (!group) return;
     const imageRef = ref(storage, `group-covers/${group.id}`);
@@ -95,9 +100,9 @@ const ProfileGroup = () => {
     const url = await getDownloadURL(imageRef);
     
     dispatch(pushCoverImg({groupId: group.id, coverimg: url}));
+    setLocalCoverImg(url); // Cập nhật state local
     message.success("Ảnh bìa nhóm đã được cập nhật");
   };
-
   const handlePostClick = () => {
     setIsModalVisible(true);
   };
@@ -195,7 +200,7 @@ const ProfileGroup = () => {
           >
             <Image
               alt="cover"
-              src={group.coverimg || "https://via.placeholder.com/940x300"}
+              src={localCoverImg || "https://via.placeholder.com/940x300"}
               style={{
                 height: "100%",
                 width: "100%",
@@ -241,7 +246,7 @@ const ProfileGroup = () => {
                 <Avatar
                   size={180}
                   icon={<UserOutlined />}
-                  src={group.avatar}
+                  src={localAvatar}
                   style={{
                     border: "4px solid white",
                     cursor: isCreator ? "pointer" : "default",

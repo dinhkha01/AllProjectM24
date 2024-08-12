@@ -136,6 +136,8 @@ const Register = () => {
         banner: "",
         friends:[],
         notyfi:[],
+        date:new Date().toISOString(),
+        status:true
       };
       const check = await dispatch(registerUser(dataToSubmit));
       if (registerUser.fulfilled.match(check)) {

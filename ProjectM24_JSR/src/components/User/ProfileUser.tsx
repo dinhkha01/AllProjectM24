@@ -129,7 +129,6 @@ const ProfileUser = () => {
         .then(() => {
           message.success("Đã gửi lời mời kết bạn");
 
-          // Cập nhật thông báo và bạn bè cho người dùng được mời kết bạn
           const newNotify = [
             ...(user.notyfi || []),
             {
@@ -140,7 +139,6 @@ const ProfileUser = () => {
           ];
           dispatch(updateUserNotify({ userId: user.id, newNotify }));
 
-          // Cập nhật danh sách bạn bè của người nhận
           const newReceiverFriends = [
             ...(user.friends || []),
             {
@@ -236,13 +234,11 @@ const ProfileUser = () => {
         </div>
         <Tabs defaultActiveKey="1" style={{ padding: "0 16px" }}>
           <TabPane tab="Bài viết" key="1">
-
             {sortedPosts
-              .filter(
-                (post) =>
-                  post.userId === user?.id ||
-                  (isFriend && post.privacy == "public") ||
-                  post.userId === currentUser?.id
+              .filter(post => 
+                post.status && 
+                post.privacy === "public" &&
+                (post.userId === user?.id || isFriend || post.userId === currentUser?.id)
               )
               .map((post) => (
                 <Card

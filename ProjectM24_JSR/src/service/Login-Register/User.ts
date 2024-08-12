@@ -81,6 +81,7 @@
 
 
 
+
   export const updateFriendsApi = async (userId: number, friends: any[]) => {
     const res = await api.patch(`users/${userId}`, { friends });
     return res.data;
@@ -91,8 +92,8 @@
 
   export const updateFriends: any = createAsyncThunk(
     "user/updateFriends",
-    async (newFriends: any[], { getState, rejectWithValue }) => {
-      try {
+    async (newFriends: any[], { getState }) => {
+  
         const state: any = getState();
 
         const userId = state.users.currentUser.id;
@@ -100,11 +101,10 @@
         const response = await updateFriendsApi(userId, newFriends);
 
         return response;
-      } catch (error: any) {
-        return rejectWithValue(error.response.data);
-      }
+      
     }
   );
+
   export const updateReceiverFriends: any = createAsyncThunk(
     "user/updateReceiverFriends",
     async (
@@ -138,6 +138,9 @@
       }
     }
   );
+
+
+
   export const acceptFriendRequest: any = createAsyncThunk(
     "user/acceptFriendRequest",
     async (
@@ -246,7 +249,18 @@
       }
     }
   );
-
+/////////////////
+export const banOrUnban: any = createAsyncThunk("auth/banOrUnban",async({userId,status}:{userId:number,status:boolean})=>{
+  // console.log(use);
+  
+    const res = await api.patch("users/"+userId,{status})
+    return res.data
+})
+////////////
+export const deleteUser :any = createAsyncThunk("user/deleteUser",async (userId:number)=>{
+  const res = await api.delete("users/"+userId)
+  return res.data
+})
 
   // Slice
   export const authSlice = createSlice({
@@ -286,7 +300,9 @@
             friends: action.payload.friends,
             notyfi: action.payload.notyfi,
             dob:action.payload.dob,
-            address:action.payload.address
+            address:action.payload.address,
+            status:action.payload.status,
+            date:action.payload.date,
 
           };
         })
@@ -302,8 +318,6 @@
         })
         .addCase(updateFriends.fulfilled, (state, action) => {
           if (state.currentUser) {
-           
-
             state.currentUser.friends = action.payload.friends;
           }
         })
@@ -361,12 +375,20 @@
           }
         }). addCase(pushInfor.fulfilled,(state,action)=>{
           if(state.currentUser){
-            state.currentUser.name = action.payload.name;
-    state.currentUser.dob = action.payload.dob;
-    state.currentUser.address = action.payload.address;
-    state.currentUser.phone = action.payload.phone;
+             state.currentUser.name = action.payload.name;
+             state.currentUser.dob = action.payload.dob;
+             state.currentUser.address = action.payload.address;
+             state.currentUser.phone = action.payload.phone;
           }
        
+        }).addCase (banOrUnban.fulfilled,(state,action)=>{
+          if(state.currentUser ){
+            state.currentUser.status= action.payload.status
+          }
+      
+         
+        }). addCase (deleteUser.fulfilled,(state,action)=>{
+          state.users= state.users.filter(users=>users.id!==action.payload)
         })
     },
   });

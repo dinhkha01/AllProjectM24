@@ -107,7 +107,7 @@ const Profile = () => {
     }
   }, [user, posts, friendsUser]);
 
-  const userPosts = posts.filter(post => post.userId === user?.id);
+  const userPosts = posts.filter(post => post.userId === user?.id && post.status === true);
   const sortedPosts = useMemo(() => {
     return [...userPosts].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -143,8 +143,9 @@ const Profile = () => {
         img: imageUrls,
         userId: user?.id,
         date: new Date().toISOString(),
-        privacy
-      };
+        privacy,
+        status:true
+       };
 
       dispatch(createPost(postData));
 

@@ -1,5 +1,5 @@
-import { TeamOutlined, SearchOutlined } from "@ant-design/icons";
-import { Avatar, Button, Card, Input, List, Tabs, Space } from "antd";
+import { TeamOutlined, SearchOutlined, LockOutlined } from "@ant-design/icons";
+import { Avatar, Button, Card, Input, List, Tabs, Space, Tooltip, message } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -53,23 +53,27 @@ const Group = () => {
           dateJoin: new Date().toISOString()
         }],
         postGroup: [],
-        status:true,
+        status: true,
       };
       dispatch(createGroup(newGroup));
       setNewGroupName("");
     }
   };
 
-  const handleGroupClick = (groupId: number) => {
-    navigate(`/group/${groupId}`);
+  const handleGroupClick = (group: Groupp) => {
+    if (group.status) {
+      navigate(`/group/${group.id}`);
+    } else {
+      message.error("Nhóm này đã bị khóa và không thể truy cập.");
+    }
   };
 
   const renderGroupCard = (group: Groupp) => (
     <Card
       hoverable
-      onClick={() => handleGroupClick(group.id)}
+      onClick={() => handleGroupClick(group)}
       cover={
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '16px', position: 'relative' }}>
           <Avatar 
             size={64} 
             src={group.avatar} 
@@ -77,11 +81,28 @@ const Group = () => {
           />
         </div>
       }
+      style={{ position: 'relative' }}
     >
       <Card.Meta
         title={group.groupName}
-        description={`${group.members.length} members`}
+        description={`${group.members.length} thành viên`}
       />
+      {!group.status && (
+        <Tooltip title="Nhóm này đã bị khóa">
+          <LockOutlined 
+            style={{
+              position: 'absolute',
+              bottom: '8px',
+              right: '8px',
+              fontSize: '16px',
+              color: 'rgba(0, 0, 0, 0.65)',
+              background: 'rgba(255, 255, 255, 0.8)',
+              borderRadius: '50%',
+              padding: '4px'
+            }}
+          />
+        </Tooltip>
+      )}
     </Card>
   );
 
@@ -89,37 +110,37 @@ const Group = () => {
     <div style={{ maxWidth: 800, margin: "0 auto" }}>
       <Space direction="vertical" style={{ width: '100%', marginBottom: 16 }}>
         <Input
-          placeholder="Search groups"
+          placeholder="Tìm kiếm nhóm"
           prefix={<SearchOutlined />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </Space>
       <Tabs defaultActiveKey="1">
-        <TabPane tab="My Groups" key="1">
+        <TabPane tab="Nhóm của tôi" key="1">
           <List
             grid={{ gutter: 16, column: 4 }}
             dataSource={myGroups}
             renderItem={renderGroupCard}
           />
         </TabPane>
-        <TabPane tab="Suggested Groups" key="2">
+        <TabPane tab="Nhóm gợi ý" key="2">
           <List
             grid={{ gutter: 16, column: 4 }}
             dataSource={suggestedGroups}
             renderItem={renderGroupCard}
           />
         </TabPane>
-        <TabPane tab="Create Group" key="3">
+        <TabPane tab="Tạo nhóm mới" key="3">
           <Card>
             <Input
-              placeholder="Enter new group name"
+              placeholder="Nhập tên nhóm mới"
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
               style={{ marginBottom: 16 }}
             />
             <Button type="primary" onClick={handleCreateGroup}>
-              Create Group
+              Tạo nhóm
             </Button>
           </Card>
         </TabPane>

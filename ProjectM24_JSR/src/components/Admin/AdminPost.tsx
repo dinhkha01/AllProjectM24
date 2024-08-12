@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Table, Tag, Button, Avatar, Input, Space } from 'antd';
 import { SearchOutlined, LockOutlined, UnlockOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../store';
-import { getAllPost, updatePostPrivacy } from '../../service/Login-Register/Post';
+import { RootState } from '../../store';
+import { deletePost, getAllPost, switchStatus,  } from '../../service/Login-Register/Post';
 import { ColumnsType } from 'antd/es/table';
 import { post } from '../../config/interface';
 
 const AdminPost = () => {
-  const dispatch: AppDispatch = useDispatch();
+  const dispatch = useDispatch();
   const posts = useSelector((state: RootState) => state.post.post);
   const users = useSelector((state: RootState) => state.users.users);
   const [searchText, setSearchText] = useState('');
@@ -17,10 +17,16 @@ const AdminPost = () => {
     dispatch(getAllPost());
   }, [dispatch]);
 
-  const handleTogglePrivacy = (id: number, currentPrivacy: 'public' | 'private') => {
-    const newPrivacy = currentPrivacy === 'public' ? 'private' : 'public';
-    dispatch(updatePostPrivacy({ id, privacy: newPrivacy }));
+  const handleToggleStatus = (postId: number, status: boolean) => {
+    dispatch(switchStatus({ postId, status }));
+    dispatch(getAllPost())
   };
+
+const deletePostt =(postId: number)=>{
+  dispatch(deletePost(postId))
+  dispatch(getAllPost())
+}
+  
 
   const getUserInfo = (userId: number) => {
     return users.find(user => user.id === userId) || { name: 'Unknown', avatar: '' };
@@ -67,12 +73,12 @@ const AdminPost = () => {
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {
-      title: 'PRIVACY',
-      dataIndex: 'privacy',
-      key: 'privacy',
-      render: (privacy: 'public' | 'private') => (
-        <Tag color={privacy === 'public' ? 'green' : 'blue'}>
-          {privacy.toUpperCase()}
+      title: 'STATUS',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: boolean) => (
+        <Tag color={status ? 'green' : 'red'}>
+          {status ? 'VISIBLE' : 'HIDDEN'}
         </Tag>
       ),
     },
@@ -82,8 +88,8 @@ const AdminPost = () => {
       render: (_, record: post) => (
         <Space>
           <Button 
-            type={record.privacy === 'public' ? 'primary' : 'default'}
-            onClick={() => handleTogglePrivacy(record.id, record.privacy)}
+            type={record.status ? 'default' : 'primary'}
+            onClick={() => handleToggleStatus(record.id, !record.status)}
             style={{
               borderRadius: '20px',
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -92,9 +98,9 @@ const AdminPost = () => {
               justifyContent: 'center',
               padding: '4px 15px',
             }}
-            icon={record.privacy === 'public' ? <LockOutlined /> : <UnlockOutlined />}
+            icon={record.status ? <LockOutlined /> : <UnlockOutlined />}
           >
-            {record.privacy === 'public' ? 'Make Private' : 'Make Public'}
+            {record.status ? 'Hide Post' : 'Show Post'}
           </Button>
           <Button 
             type="primary"
@@ -107,6 +113,7 @@ const AdminPost = () => {
               justifyContent: 'center',
               padding: '4px 15px',
             }}
+            onClick={()=>deletePostt(record.id)}
             icon={<DeleteOutlined />}
           >
             Delete
@@ -138,7 +145,10 @@ const AdminPost = () => {
         />
         <Table 
           columns={columns} 
-          dataSource={posts}
+          dataSource={posts.filter(post => 
+            post.content.toLowerCase().includes(searchText.toLowerCase()) ||
+            getUserInfo(post.userId).name.toLowerCase().includes(searchText.toLowerCase())
+          )}
           rowKey="id"
           pagination={{ pageSize: 10 }}
           onChange={(pagination, filters, sorter) => {

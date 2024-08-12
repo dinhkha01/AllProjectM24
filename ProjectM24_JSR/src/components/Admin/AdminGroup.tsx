@@ -3,7 +3,7 @@ import { Table, Tag, Button, Avatar, Input, Space, Modal, List, Typography } fro
 import { SearchOutlined, UserOutlined, LockOutlined, UnlockOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { allGroups } from '../../service/Login-Register/Group';
+import { allGroups, switchStatusGroup } from '../../service/Login-Register/Group';
 import { ColumnsType } from 'antd/es/table';
 import { Group, GroupMember } from '../../config/interface';
 import { getAllUsers } from '../../service/Login-Register/User';
@@ -14,7 +14,7 @@ const AdminGroup = () => {
   const dispatch: AppDispatch = useDispatch();
   const groups = useSelector((state: RootState) => state.group.groups);
   const users = useSelector((state: RootState) => state.users.users);
-  console.log(users);
+  // console.log(users);
   
   const [searchText, setSearchText] = useState('');
 
@@ -27,6 +27,13 @@ const AdminGroup = () => {
     const owner = users.find(user => user.id === ownerId);
     return owner ? owner.name : 'Unknown';
   };
+  const handleSwitchStatus = (groupId:number,status:boolean)=>{
+    console.log(groupId);
+    
+      dispatch(switchStatusGroup({groupId,status}))
+      dispatch(allGroups())
+
+  }
 
   const handleDeleteGroup = (groupId: number) => {
     Modal.confirm({
@@ -128,6 +135,8 @@ const AdminGroup = () => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
+            onClick={()=>handleSwitchStatus(record.id,!record.status)}
+            
           >
             {record.status ? 'Lock' : 'Unlock'}
           </Button>

@@ -15,13 +15,10 @@ export const createPost: any = createAsyncThunk(
 );
 export const deletePost: any = createAsyncThunk(
   "post/deletePost",
-  async (postId: number, { rejectWithValue }) => {
-    try {
+  async (postId: number) => {
       await api.delete(`post/${postId}`);
       return postId;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || "An error occurred");
-    }
+  
   }
 );
 
@@ -36,6 +33,10 @@ export const updatePostPrivacy: any = createAsyncThunk(
     }
   }
 );
+export const switchStatus:any= createAsyncThunk("post/switchStatus",async({postId,status}:{postId:number,status:boolean})=>{
+  const res = await api.patch("post/"+postId,{status})
+  return res.data
+})
 export const postSlice = createSlice({
   name: "post",
   initialState: {
@@ -58,7 +59,13 @@ export const postSlice = createSlice({
         if (postIndex !== -1) {
           state.post[postIndex].privacy = privacy;
         }
-      });;
+      }) .addCase(switchStatus.fulfilled, (state, action) => {
+        const updatedPost = action.payload;
+        const postIndex = state.post.findIndex(p => p.id === updatedPost.id);
+        if (postIndex !== -1) {
+          state.post[postIndex] = updatedPost;
+        }
+      });
   },
 });
 

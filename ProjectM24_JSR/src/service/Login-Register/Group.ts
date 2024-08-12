@@ -1,3 +1,4 @@
+import { switchStatus } from './Post';
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "..";
 import { Group, GroupPost } from "../../config/interface";
@@ -112,6 +113,10 @@ export const createGroup: any = createAsyncThunk(
     return response.data;
   }
 );
+export const switchStatusGroup : any = createAsyncThunk("group/switchStatusGroup",async({groupId,status}: {groupId:number,status:boolean})=>{
+  const res = await api.patch("group/"+groupId,{status})
+  return res.data
+})
 interface GroupState {
   groups: Group[];
   currentGroup: Group | null;
@@ -179,6 +184,11 @@ export const groupSlice = createSlice({
         }
       }). addCase(createGroup.fulfilled,(state,action)=>{
         state.groups=[...state.groups,action.payload]
+      }).addCase(switchStatusGroup.fulfilled,(state,action)=>{
+        if(state.currentGroup){
+          state.currentGroup.status=action.payload.status
+        }
+
       });
       
   },

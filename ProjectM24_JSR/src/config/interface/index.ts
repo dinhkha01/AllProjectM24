@@ -17,7 +17,7 @@ export interface users {
 
 export type FriendType = {
   userId: number;
-  status: "pending" | "accept" | "blocked";
+  status: "pending" | "accept" ;
   add_at: string;
 };
 export type notyfiType = {
@@ -28,6 +28,7 @@ export type notyfiType = {
 /////////////////////////////////////////////////
 export interface post {
   content: string;
+  status:boolean;
   img: string[];
   reactions: [];
   userId: number;

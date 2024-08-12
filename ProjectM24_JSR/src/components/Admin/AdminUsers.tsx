@@ -3,7 +3,7 @@ import { Table, Tag, Button, Avatar, Input, Space, Modal } from 'antd';
 import { UserOutlined, SearchOutlined, DeleteOutlined, StopOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { getAllUsers } from '../../service/Login-Register/User';
+import { banOrUnban, deleteUser, getAllUsers } from '../../service/Login-Register/User';
 import { ColumnsType } from 'antd/es/table';
 import { users } from '../../config/interface';
 
@@ -24,13 +24,19 @@ const AdminUsers = () => {
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-        // Implement the actual deletion logic here
-        console.log('Deleting user with ID:', userId);
-        // You might want to dispatch an action to delete the user from your Redux store
-        // and/or make an API call to delete the user from the backend
+      
+       dispatch(deleteUser(userId))
+       dispatch(getAllUsers());
+      
       },
     });
   };
+  const banOrUnnban =(userId:number, status:boolean)=>{
+    console.log(userId);
+    
+    dispatch(banOrUnban({userId,status}))
+    dispatch(getAllUsers())
+  }
 
   const columns: ColumnsType<users> = [
     {
@@ -89,6 +95,9 @@ const AdminUsers = () => {
           <Button 
             type={record.status ? "default" : "primary"}
             icon={record.status ? <StopOutlined /> : <CheckCircleOutlined />}
+            onClick={()=>banOrUnnban(record.id,!record.status
+
+            )}
           >
             {record.status ? 'Ban' : 'Unban'}
           </Button>

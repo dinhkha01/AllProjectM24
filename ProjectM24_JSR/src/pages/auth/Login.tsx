@@ -36,7 +36,12 @@ const Login = () => {
   const onFinish = async (values: { email: string; password: string }) => {
     try {
       const result = await dispatch(login(values)).unwrap();
-
+  
+      if (!result.user.status) {
+        message.error("Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
+        return;
+      }
+  
       if (result.user.role === true) {
         message.success("Đăng nhập thành công với quyền admin!");
       } else {
