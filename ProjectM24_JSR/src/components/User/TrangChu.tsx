@@ -56,7 +56,7 @@ const TrangChu = () => {
   const posts = useSelector((state: RootState) => state.post.post);
   const currentUser = useSelector((state: RootState) => state.users.currentUser);
   const users = useSelector((state: RootState) => state.users.users);
-  
+
 
   const sortedPosts = useMemo(() => {
     return [...posts].sort(
@@ -64,14 +64,14 @@ const TrangChu = () => {
     );
   }, [posts]);
 
-  const getUserName = (userId: number) => {
-    const user = users.find((user) => user.id === userId);
-    return user ? user.name : "Người dùng ẩn danh";
-  };
-
   const getUserAvatar = (userId: number) => {
     const user = users.find((user) => user.id === userId);
     return user && user.avatar ? user.avatar : "https://via.placeholder.com/32";
+  };
+  
+  const getUserName = (userId: number) => {
+    const user = users.find((user) => user.id === userId);
+    return user ? user.name : "Người dùng ẩn danh";
   };
 
   useEffect(() => {
@@ -214,7 +214,6 @@ const TrangChu = () => {
       navigate(`/user/${clickedUserId}`);
     }
   };
-
   const handleCommentSubmit = (postId: number, content: string) => {
     if (content.trim()) {
       const newComment = {
@@ -224,7 +223,7 @@ const TrangChu = () => {
         date: new Date().toISOString(),
         reactions: []
       };
-
+  
       dispatch(addCommentToPost({ postId, comment: newComment }));
       setCommentContent('');
     }
@@ -449,30 +448,30 @@ const TrangChu = () => {
                       </List.Item>
                     )}
                   />
-                  <Input
-                    placeholder="Viết bình luận..."
-                    value={commentContent}
-                    onChange={(e) => setCommentContent(e.target.value)}
-                    prefix={
-                      <Avatar
-                        src={currentUser?.avatar}
-                        size={24}
-                        style={{ marginRight: "8px" }}
-                      />
-                    }
-                    style={{
-                      background: "#F0F2F5",
-                      border: "none",
-                      borderRadius: "20px",
-                      padding: "8px 12px",
-                      marginTop: "16px",
-                    }}
-                    onPressEnter={() => {
-                      handleCommentSubmit(post.id, commentContent);
-                    }}
-                  />
                 </div>
               )}
+              <Input
+                placeholder="Viết bình luận..."
+                value={commentContent}
+                onChange={(e) => setCommentContent(e.target.value)}
+                prefix={
+                  <Avatar
+                    src={currentUser?.avatar}
+                    size={24}
+                    style={{ marginRight: "8px" }}
+                  />
+                }
+                style={{
+                  background: "#F0F2F5",
+                  border: "none",
+                  borderRadius: "20px",
+                  padding: "8px 12px",
+                  marginTop: "16px",
+                }}
+                onPressEnter={() => {
+                  handleCommentSubmit(post.id, commentContent);
+                }}
+              />
             </Card>
           ))}
 

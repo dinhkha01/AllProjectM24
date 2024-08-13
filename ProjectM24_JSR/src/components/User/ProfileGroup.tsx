@@ -16,16 +16,19 @@ import {
   Modal,
   Form,
   List,
+  Menu,
+  Dropdown,
 } from "antd";
 import {
   UserOutlined,
   HeartOutlined,
   MessageOutlined,
-  SendOutlined,
   EllipsisOutlined,
   UploadOutlined,
   CameraOutlined,
   PlusOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import { RootState } from "../../store";
 import { Group, users } from "../../config/interface";
@@ -34,7 +37,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 
 import { createPost, getAllPost } from "../../service/Login-Register/Post";
-import { addUserInGroup, createGroupPost, pushAvatar, pushCoverImg } from "../../service/Login-Register/Group";
+import { addUserInGroup, createGroupPost, deleteGroupPost, pushAvatar, pushCoverImg } from "../../service/Login-Register/Group";
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
@@ -59,6 +62,12 @@ const ProfileGroup = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [localAvatar, setLocalAvatar] = useState(group?.avatar);
   const [localCoverImg, setLocalCoverImg] = useState(group?.coverimg);
+
+  // Image preview states
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [currentPostImages, setCurrentPostImages] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const updatedGroup = allGroups.find((g) => g.id === parsedGroupId);
@@ -90,7 +99,7 @@ const ProfileGroup = () => {
     const url = await getDownloadURL(imageRef);
 
     dispatch(pushAvatar({ groupId: group.id, avatar: url }));
-    setLocalAvatar(url); // Cập nhật state local
+    setLocalAvatar(url);
     message.success("Ảnh đại diện nhóm đã được cập nhật");
   };
 
@@ -101,9 +110,10 @@ const ProfileGroup = () => {
     const url = await getDownloadURL(imageRef);
 
     dispatch(pushCoverImg({ groupId: group.id, coverimg: url }));
-    setLocalCoverImg(url); // Cập nhật state local
+    setLocalCoverImg(url);
     message.success("Ảnh bìa nhóm đã được cập nhật");
   };
+
   const handlePostClick = () => {
     setIsModalVisible(true);
   };
@@ -115,42 +125,36 @@ const ProfileGroup = () => {
   };
 
   const handlePostSubmit = async () => {
+    if (!group?.id) {
+      throw new Error("Group ID is missing");
+    }
 
-      if (!group?.id) {
-        throw new Error("Group ID is missing");
-      }
+    const { content } = await form.validateFields();
 
-      // Validate form fields
-      const { content } = await form.validateFields();
+    const imageUrls = await Promise.all(
+      fileList.map(async (file) => {
+        const imageRef = ref(storage, `group-posts/${group.id}/${file.uid}`);
+        const snapshot = await uploadBytes(imageRef, file as RcFile);
+        return getDownloadURL(snapshot.ref);
+      })
+    );
 
-      // Upload images
-      const imageUrls = await Promise.all(
-        fileList.map(async (file) => {
-          const imageRef = ref(storage, `group-posts/${group.id}/${file.uid}`);
-          const snapshot = await uploadBytes(imageRef, file as RcFile);
-          return getDownloadURL(snapshot.ref);
-        })
-      );
+    const postData = {
+      content,
+      img: imageUrls,
+      userId: currentUser.id,
+    };
 
-      // Prepare post data
-      const postData = {
-        content,
-        img: imageUrls,
-        userId: currentUser.id,
-      };
+    const result = await dispatch(createGroupPost({ groupId: group.id, postData }));
 
-      // Dispatch action to create post
-      const result = await dispatch(createGroupPost({ groupId: group.id, postData }));
+    if (createGroupPost.rejected.match(result)) {
+      throw new Error(result.payload as string);
+    }
 
-      if (createGroupPost.rejected.match(result)) {
-        throw new Error(result.payload as string);
-      }
-
-      // Success handling
-      message.success("Bài viết đã được đăng thành công");
-      setIsModalVisible(false);
-      form.resetFields();
-      setFileList([]);   
+    message.success("Bài viết đã được đăng thành công");
+    setIsModalVisible(false);
+    form.resetFields();
+    setFileList([]);
   };
 
   const uploadProps: UploadProps = {
@@ -166,6 +170,7 @@ const ProfileGroup = () => {
     },
     fileList,
   };
+
   const handleJoinGroup = async () => {
     if (group && currentUser) {
       try {
@@ -177,6 +182,36 @@ const ProfileGroup = () => {
     }
   };
 
+  // Image preview handlers
+  const handlePreview = (imageUrl: string, postImages: string[]) => {
+    setPreviewImage(imageUrl);
+    setPreviewVisible(true);
+    setCurrentPostImages(postImages);
+    setCurrentImageIndex(postImages.indexOf(imageUrl));
+  };
+
+  const handlePreviewClose = () => {
+    setPreviewVisible(false);
+    setCurrentImageIndex(0);
+  };
+  const handleDeletePost = async (postId: number) => {
+    if (group && isCreator) {
+      try {
+        await dispatch(deleteGroupPost({ groupId: group.id, postId }));
+        message.success("Bài viết đã được xóa thành công");
+      } catch (error) {
+        message.error("Có lỗi xảy ra khi xóa bài viết");
+      }
+    }
+  };
+
+  const postMenu = (postId: number) => (
+    <Menu>
+      <Menu.Item key="delete" onClick={() => handleDeletePost(postId)}>
+        Xóa bài viết
+      </Menu.Item>
+    </Menu>
+  );
   if (!group) {
     return <div>Group not found</div>;
   }
@@ -337,7 +372,6 @@ const ProfileGroup = () => {
                       />
                       <span style={{ color: "#FF69B4" }}>Bình luận</span>
                     </div>,
-
                   ]}
                 >
                   <Meta
@@ -364,50 +398,56 @@ const ProfileGroup = () => {
                             {new Date(post.dateat).toLocaleString()}
                           </span>
                         </div>
-                        <EllipsisOutlined />
+                        {isCreator ? (
+                          <Dropdown overlay={postMenu(post.idPostGroup)} trigger={['click']}>
+                            <EllipsisOutlined style={{ cursor: 'pointer' }} />
+                          </Dropdown>
+                        ) : (
+                          <EllipsisOutlined />
+                        )}
                       </div>
                     }
                   />
                   <div style={{ padding: "16px 0" }}>{post.content}</div>
                   {post.img.length > 0 && (
                     <div style={{ marginTop: "16px" }}>
-                      <Image.PreviewGroup>
-                        <div
-                          style={{
-                            display: "grid",
-                            gridGap: "2px",
-                            gridTemplateColumns: `repeat(${Math.min(
-                              post.img.length,
-                              3
-                            )}, 1fr)`,
-                          }}
-                        >
-                          {post.img.map((imageUrl, index) => (
-                            <div
-                              key={index}
+                      <div
+                        style={{
+                          display: "grid",
+                          gridGap: "2px",
+                          gridTemplateColumns: `repeat(${Math.min(
+                            post.img.length,
+                            3
+                          )}, 1fr)`,
+                        }}
+                      >
+                        {post.img.map((imageUrl, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              position: "relative",
+                              paddingTop: "100%",
+                              overflow: "hidden",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handlePreview(imageUrl, post.img)}
+                          >
+                            <img
+                              alt={`Post content ${index + 1}`}
+                              src={imageUrl}
                               style={{
-                                position: "relative",
-                                paddingTop: "100%",
-                                overflow: "hidden",
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                borderRadius: "4px",
                               }}
-                            >
-                              <img
-                                alt={`Post content ${index + 1}`}
-                                src={imageUrl}
-                                style={{
-                                  position: "absolute",
-                                  top: 0,
-                                  left: 0,
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                  borderRadius: "4px",
-                                }}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </Image.PreviewGroup>
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                   <Input
@@ -431,7 +471,7 @@ const ProfileGroup = () => {
               );
             })}
           </TabPane>
-          
+
           <TabPane tab="Thành viên" key="3">
             <List
               grid={{ gutter: 16, column: 4 }}
@@ -452,10 +492,10 @@ const ProfileGroup = () => {
               }}
             />
           </TabPane>
-          
         </Tabs>
       </Card>
 
+      {/* Post creation modal */}
       <Modal
         title="Tạo bài viết mới"
         visible={isModalVisible}
@@ -490,6 +530,32 @@ const ProfileGroup = () => {
             </Upload>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Image preview modal */}
+      <Modal
+        visible={previewVisible}
+        footer={null}
+        onCancel={handlePreviewClose}
+        width="50%"
+      >
+        <div style={{ position: "relative" }}>
+          <Image src={currentPostImages[currentImageIndex]} width="100%" />
+          {currentImageIndex > 0 && (
+            <Button
+              style={{ position: "absolute", top: "50%", left: "10px" }}
+              onClick={() => setCurrentImageIndex(currentImageIndex - 1)}
+              icon={<LeftOutlined />}
+            />
+          )}
+          {currentImageIndex < currentPostImages.length - 1 && (
+            <Button
+              style={{ position: "absolute", top: "50%", right: "10px" }}
+              onClick={() => setCurrentImageIndex(currentImageIndex + 1)}
+              icon={<RightOutlined />}
+            />
+          )}
+        </div>
       </Modal>
     </div>
   );

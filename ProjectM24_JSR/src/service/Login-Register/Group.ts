@@ -119,6 +119,29 @@ export const switchStatusGroup : any = createAsyncThunk("group/switchStatusGroup
   const res = await api.patch("group/"+groupId,{status})
   return res.data
 })
+export const deleteGroupPost: any = createAsyncThunk(
+  "group/deleteGroupPost",
+  async ({ groupId, postId }: { groupId: number; postId: number }, { getState, rejectWithValue }) => {
+    try {
+      const state: RootState = getState() as RootState;
+      const group = state.group.groups.find(g => g.id === groupId);
+
+      if (!group) {
+        throw new Error("Group not found");
+      }
+
+      const updatedPostGroup = group.postGroup.filter(post => post.idPostGroup !== postId);
+
+      const response = await api.patch(`group/${groupId}`, {
+        postGroup: updatedPostGroup
+      });
+
+      return { groupId, postId, updatedGroup: response.data };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
 interface GroupState {
   groups: Group[];
   currentGroup: Group | null;
@@ -191,6 +214,17 @@ export const groupSlice = createSlice({
           state.currentGroup.status=action.payload.status
         }
 
+      }).addCase(deleteGroupPost.fulfilled, (state, action: PayloadAction<{ groupId: number; postId: number; updatedGroup: Group }>) => {
+        const { groupId, updatedGroup } = action.payload;
+        
+        const groupIndex = state.groups.findIndex(g => g.id === groupId);
+        if (groupIndex !== -1) {
+          state.groups[groupIndex] = updatedGroup;
+        }
+      
+        if (state.currentGroup && state.currentGroup.id === groupId) {
+          state.currentGroup = updatedGroup;
+        }
       });
       
   },

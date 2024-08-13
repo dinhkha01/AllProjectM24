@@ -135,7 +135,11 @@
       "privacy": "public",
       "status": true,
       "comments": [],
-      "like": []
+      "like": [
+        {
+          "userId": 2
+        }
+      ]
     },
     {
       "content": "hi",
@@ -192,10 +196,10 @@
           "userId": 3
         },
         {
-          "userId": 2
+          "userId": 1
         },
         {
-          "userId": 1
+          "userId": 2
         }
       ],
       "comments": [
@@ -219,6 +223,13 @@
           "userId": 3,
           "content": "alo",
           "date": "2024-08-13T03:50:14.020Z",
+          "reactions": []
+        },
+        {
+          "id": 1723563769830,
+          "userId": 2,
+          "content": "a",
+          "date": "2024-08-13T15:42:49.830Z",
           "reactions": []
         }
       ]
@@ -260,32 +271,6 @@
       ],
       "postGroup": [
         {
-          "userId": 2,
-          "content": " như qq",
-          "img": [],
-          "dateat": "2024-08-06T13:48:17.225Z"
-        },
-        {
-          "userId": 3,
-          "content": " như qq",
-          "img": [],
-          "dateat": "2024-08-06T13:48:17.225Z"
-        },
-        {
-          "idPostGroup": 1723038497225,
-          "content": "a",
-          "img": [],
-          "userId": 2,
-          "dateat": "2024-08-07T13:48:17.225Z"
-        },
-        {
-          "idPostGroup": 1723038820520,
-          "content": "hi",
-          "img": [],
-          "userId": 3,
-          "dateat": "2024-08-07T13:53:40.520Z"
-        },
-        {
           "idPostGroup": 1723038856768,
           "content": "Hà nè",
           "img": [
@@ -293,20 +278,6 @@
           ],
           "userId": 3,
           "dateat": "2024-08-07T13:54:16.768Z"
-        },
-        {
-          "idPostGroup": 1723543136644,
-          "content": "ko biết ",
-          "img": [],
-          "userId": 2,
-          "dateat": "2024-08-13T09:58:56.644Z"
-        },
-        {
-          "idPostGroup": 1723543224102,
-          "content": "a",
-          "img": [],
-          "userId": 2,
-          "dateat": "2024-08-13T10:00:24.102Z"
         }
       ]
     },

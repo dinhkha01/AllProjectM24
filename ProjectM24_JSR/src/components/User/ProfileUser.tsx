@@ -14,6 +14,7 @@ import {
   message,
   List,
   Badge,
+  Modal,
 } from "antd";
 import {
   UserOutlined,
@@ -22,6 +23,8 @@ import {
   SendOutlined,
   EllipsisOutlined,
   HeartFilled,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import { RootState } from "../../store";
 import { post, users } from "../../config/interface";
@@ -55,12 +58,16 @@ const ProfileUser = () => {
   const [photos, setPhotos] = useState<any[]>([]);
   const [activeCommentPostId, setActiveCommentPostId] = useState<number | null>(null);
   const [commentContent, setCommentContent] = useState("");
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [currentPostImages, setCurrentPostImages] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const handleCommentSubmit = (postId: number, content: string) => {
     if (content.trim()) {
       const newComment = {
         id: Date.now(),
-        userId: user?.id,
+        userId: currentUser?.id,
         content: content.trim(),
         date: new Date().toISOString(),
         reactions: []
@@ -80,7 +87,9 @@ const ProfileUser = () => {
     const commentUser = allUsers.find(u => u.id === userId);
     return commentUser?.name || currentUser?.name;
   };
+
   const userPosts = posts.filter((post) => post.userId === user?.id);
+
   useEffect(() => {
     if (user?.id) {
       const userFriends = user.friends
@@ -100,7 +109,7 @@ const ProfileUser = () => {
     return [...userPosts].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-  }, [posts]);
+  }, [userPosts]);
 
   const isFriend = currentUser?.friends?.some(
     (friend) => friend.userId === user?.id && friend.status === "accept"
@@ -185,10 +194,23 @@ const ProfileUser = () => {
         });
     }
   };
+
   const handleLikeClick = (postId: number) => {
     if (currentUser) {
       dispatch(likePost({ postId, userId: currentUser.id }));
     }
+  };
+
+  const handlePreview = (imageUrl: string, postImages: string[]) => {
+    setPreviewImage(imageUrl);
+    setPreviewVisible(true);
+    setCurrentPostImages(postImages);
+    setCurrentImageIndex(postImages.indexOf(imageUrl));
+  };
+
+  const handlePreviewClose = () => {
+    setPreviewVisible(false);
+    setCurrentImageIndex(0);
   };
 
   if (!user) {
@@ -365,43 +387,44 @@ const ProfileUser = () => {
                 <div style={{ padding: "16px 0" }}>{post.content}</div>
                 {post.img.length > 0 && (
                   <div style={{ marginTop: "16px" }}>
-                    <Image.PreviewGroup>
-                      <div
-                        style={{
-                          display: "grid",
-                          gridGap: "2px",
-                          gridTemplateColumns: `repeat(${Math.min(
-                            post.img.length,
-                            3
-                          )}, 1fr)`,
-                        }}
-                      >
-                        {post.img.map((imageUrl, index) => (
-                          <div
-                            key={index}
+                    <div
+                      style={{
+                        display: "grid",
+                        gridGap: "2px",
+                        gridTemplateColumns: `repeat(${Math.min(post.img.length, 3)}, 1fr)`,
+                      }}
+                    >
+                      {post.img.map((imageUrl, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            position: "relative",
+                            paddingTop: "100%",
+                            overflow: "hidden",
+                            cursor: "pointer",
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentImageIndex(index);
+                            handlePreview(imageUrl, post.img);
+                          }}
+                        >
+                          <img
+                            alt={`Post content ${index + 1}`}
+                            src={imageUrl}
                             style={{
-                              position: "relative",
-                              paddingTop: "100%",
-                              overflow: "hidden",
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              borderRadius: "4px",
                             }}
-                          >
-                            <img
-                              alt={`Post content ${index + 1}`}
-                              src={imageUrl}
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                borderRadius: "4px",
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </Image.PreviewGroup>
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
                 {activeCommentPostId === post.id && (
@@ -482,6 +505,31 @@ const ProfileUser = () => {
           </TabPane>
         </Tabs>
       </Card>
+
+      <Modal
+        visible={previewVisible}
+        footer={null}
+        onCancel={handlePreviewClose}
+        width="50%"
+      >
+        <div style={{ position: "relative" }}>
+          <Image src={currentPostImages[currentImageIndex]} width="100%" />
+          {currentImageIndex > 0 && (
+            <Button
+              style={{ position: "absolute", top: "50%", left: "10px" }}
+              onClick={() => setCurrentImageIndex(currentImageIndex - 1)}
+              icon={<LeftOutlined />}
+            />
+          )}
+          {currentImageIndex < currentPostImages.length - 1 && (
+            <Button
+              style={{ position: "absolute", top: "50%", right: "10px" }}
+              onClick={() => setCurrentImageIndex(currentImageIndex + 1)}
+              icon={<RightOutlined />}
+            />
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };
