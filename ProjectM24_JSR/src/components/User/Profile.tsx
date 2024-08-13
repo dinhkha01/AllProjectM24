@@ -19,6 +19,7 @@ import {
   Divider,
   DatePicker,
   Menu,
+  Badge,
 } from "antd";
 import {
   UserOutlined,
@@ -33,9 +34,10 @@ import {
   CalendarOutlined,
   HomeOutlined,
   PhoneOutlined,
+  HeartFilled,
 } from "@ant-design/icons";
 import { RootState } from "../../store";
-import { createPost, getAllPost, deletePost, updatePostPrivacy } from "../../service/Login-Register/Post";
+import { createPost, getAllPost, deletePost, updatePostPrivacy, addCommentToPost, likePost } from "../../service/Login-Register/Post";
 import { storage } from "../../config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
@@ -61,6 +63,23 @@ const Profile = () => {
   const [editForm] = Form.useForm();
   const [optionsModalVisible, setOptionsModalVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [activeCommentPostId, setActiveCommentPostId] = useState<number | null>(null);
+  const [commentContent, setCommentContent] = useState("");
+
+  const handleCommentSubmit = (postId: number, content: string) => {
+    if (content.trim()) {
+      const newComment = {
+        id: Date.now(),
+        userId: user?.id,
+        content: content.trim(),
+        date: new Date().toISOString(),
+        reactions: []
+      };
+
+      dispatch(addCommentToPost({ postId, comment: newComment }));
+      setCommentContent('');
+    }
+  };
 
   const showEditModal = () => {
     const dobDayjs = user?.dob ? dayjs(user.dob, 'DD/MM/YY') : null;
@@ -144,8 +163,9 @@ const Profile = () => {
         userId: user?.id,
         date: new Date().toISOString(),
         privacy,
-        status:true
-       };
+        status: true,
+        like:[]
+      };
 
       dispatch(createPost(postData));
 
@@ -205,19 +225,16 @@ const Profile = () => {
   };
 
   const handleDeletePost = async (postId: number) => {
-    try {
+
       await dispatch(deletePost(postId));
       message.success('Bài viết đã được xóa thành công');
       dispatch(getAllPost());
       setOptionsModalVisible(false);
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      message.error('Có lỗi xảy ra khi xóa bài viết');
-    }
+ 
   };
 
   const handleUpdatePostPrivacy = async (postId: number) => {
-    try {
+  
       const post = posts.find(p => p.id === postId);
       if (post) {
         const newPrivacy = post.privacy === 'public' ? 'private' : 'public';
@@ -226,12 +243,23 @@ const Profile = () => {
         dispatch(getAllPost());
         setOptionsModalVisible(false);
       }
-    } catch (error) {
-      console.error('Error updating post privacy:', error);
-      message.error('Có lỗi xảy ra khi cập nhật trạng thái bài viết');
-    }
+
   };
 
+  const getUserAvatar = (userId:number) => {
+    const commentUser = friendsUser.find(u => u.id === userId);
+    return commentUser?.avatar || user?.avatar;
+  };
+
+  const getUserName = (userId:number) => {
+    const commentUser = friendsUser.find(u => u.id === userId);
+    return commentUser?.name || user?.name;
+  };
+  const handleLikeClick = (postId: number) => {
+    if (user) {
+      dispatch(likePost({ postId, userId: user.id }));
+    }
+  };
   const pinkButtonStyle = {
     backgroundColor: "#FF69B4",
     borderColor: "#FF69B4",
@@ -309,17 +337,13 @@ const Profile = () => {
             </div>
           </div>
           <Row gutter={16} style={{ marginTop: 16 }}>
-            <Col>
-              <Button style={pinkButtonStyle}>Thêm vào tin</Button>
-            </Col>
+           
             <Col>
               <Button icon={<EditOutlined />} style={pinkButtonStyle} onClick={showEditModal}>
                 Chỉnh sửa trang cá nhân
               </Button>
             </Col>
-            <Col>
-              <Button icon={<EllipsisOutlined />} style={pinkButtonStyle} />
-            </Col>
+            
           </Row>
         </div>
         <Tabs defaultActiveKey="1" style={{ padding: "0 16px" }}>
@@ -346,28 +370,43 @@ const Profile = () => {
                 style={{ width: "100%", marginBottom: 16, position: "relative" }}
                 actions={[
                   <div
-                    key="like"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <HeartOutlined
-                      style={{
-                        fontSize: "20px",
-                        marginRight: "5px",
-                        color: "#FF69B4",
-                      }}
-                    />
-                    <span style={{ color: "#FF69B4" }}>Thích</span>
-                  </div>,
+                  key="like"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: post.like.length > 0 ? "#FF69B4" : "inherit",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLikeClick(post.id);
+                  }}
+                >
+                  {user && post.like.some((like: { userId: number }) => like.userId === user.id) ? (
+                    <HeartFilled style={{
+                      fontSize: "20px",
+                      marginRight: "5px",
+                      color: "#FF69B4",
+                    }} />
+                  ) : (
+                    <HeartOutlined style={{
+                      fontSize: "20px",
+                      marginRight: "5px",
+                    }} />
+                  )}
+                  <span>Thích ({post.like.length})</span>
+                </div>,
                   <div
                     key="comment"
                     style={{
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveCommentPostId(activeCommentPostId === post.id ? null : post.id);
                     }}
                   >
                     <MessageOutlined
@@ -377,25 +416,14 @@ const Profile = () => {
                         color: "#FF69B4",
                       }}
                     />
-                    <span style={{ color: "#FF69B4" }}>Bình luận</span>
-                  </div>,
-                  <div
-                    key="share"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <SendOutlined
-                      style={{
-                        fontSize: "20px",
-                        marginRight: "5px",
-                        color: "#FF69B4",
-                      }}
+                    <span style={{ color: "#FF69B4", marginRight: "5px" }}>Bình luận</span>
+                    <Badge
+                      count={post.comments?.length || ""}
+                      showZero
+                      style={{ backgroundColor: '#FF69B4', marginLeft: '5px' }}
                     />
-                    <span style={{ color: "#FF69B4" }}>Chia sẻ</span>
                   </div>,
+                  
                 ]}
               >
                 <div
@@ -481,8 +509,27 @@ const Profile = () => {
                     </Image.PreviewGroup>
                   </div>
                 )}
+                {activeCommentPostId === post.id && (
+                  <div style={{ marginTop: "16px" }}>
+                    <List
+                      itemLayout="horizontal"
+                      dataSource={post.comments || []}
+                      renderItem={(comment) => (
+                        <List.Item>
+                          <List.Item.Meta
+                            avatar={<Avatar src={getUserAvatar(comment.userId)} />}
+                            title={getUserName(comment.userId)}
+                            description={comment.content}
+                          />
+                        </List.Item>
+                      )}
+                    />
+                  </div>
+                )}
                 <Input
                   placeholder="Viết bình luận..."
+                  value={commentContent}
+                  onChange={(e) => setCommentContent(e.target.value)}
                   prefix={
                     <Avatar
                       src={user?.avatar}
@@ -496,6 +543,9 @@ const Profile = () => {
                     borderRadius: "20px",
                     padding: "8px 12px",
                     marginTop: "16px",
+                  }}
+                  onPressEnter={() => {
+                    handleCommentSubmit(post.id, commentContent);
                   }}
                 />
               </Card>
@@ -706,10 +756,10 @@ const Profile = () => {
             }
           }}
           items={[
-            { 
-              key: 'privacy', 
-              label: selectedPostId && posts.find(p => p.id === selectedPostId)?.privacy === "public" 
-                ? "Đổi trạng thái thành riêng tư" 
+            {
+              key: 'privacy',
+              label: selectedPostId && posts.find(p => p.id === selectedPostId)?.privacy === "public"
+                ? "Đổi trạng thái thành riêng tư"
                 : "Đổi trạng thái thành công khai"
             },
             { key: 'delete', label: 'Xóa bài viết' },

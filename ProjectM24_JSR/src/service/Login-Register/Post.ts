@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api } from "..";
-import { post } from "../../config/interface";
+import { like, post } from "../../config/interface";
 
 export const getAllPost: any = createAsyncThunk("user/getAllPost", async () => {
   const res = await api.get("post");
@@ -37,6 +37,37 @@ export const switchStatus:any= createAsyncThunk("post/switchStatus",async({postI
   const res = await api.patch("post/"+postId,{status})
   return res.data
 })
+export const addCommentToPost: any = createAsyncThunk(
+  'post/addComment',
+  async ({ postId, comment }: { postId: number, comment: Comment }) => {
+    const response = await api.get(`post/${postId}`);
+    const post = response.data;
+    const updatedComments = [...post.comments, comment];
+    const updatedResponse = await api.patch(`post/${postId}`, { 
+      comments: updatedComments
+    });
+    return { postId, updatedPost: updatedResponse.data };
+  }
+);
+export const likePost: any = createAsyncThunk(
+  'post/likePost',
+  async ({ postId, userId }: { postId: number, userId: number }) => {
+    const response = await api.get(`post/${postId}`);
+    const post = response.data;
+    const likeIndex = post.like.findIndex((like: like) => like.userId === userId);
+    
+    if (likeIndex === -1) {
+      // User hasn't liked the post, so add the like
+      post.like.push({ userId });
+    } else {
+      // User has already liked the post, so remove the like
+      post.like.splice(likeIndex, 1);
+    }
+    
+    const updatedResponse = await api.patch(`post/${postId}`, { like: post.like });
+    return { postId, updatedPost: updatedResponse.data };
+  }
+);
 export const postSlice = createSlice({
   name: "post",
   initialState: {
@@ -62,6 +93,18 @@ export const postSlice = createSlice({
       }) .addCase(switchStatus.fulfilled, (state, action) => {
         const updatedPost = action.payload;
         const postIndex = state.post.findIndex(p => p.id === updatedPost.id);
+        if (postIndex !== -1) {
+          state.post[postIndex] = updatedPost;
+        }
+      }) .addCase(addCommentToPost.fulfilled, (state, action) => {
+        const { postId, updatedPost } = action.payload;
+        const postIndex = state.post.findIndex(p => p.id === postId);
+        if (postIndex !== -1) {
+          state.post[postIndex] = updatedPost;
+        }
+      }).addCase(likePost.fulfilled, (state, action) => {
+        const { postId, updatedPost } = action.payload;
+        const postIndex = state.post.findIndex(p => p.id === postId);
         if (postIndex !== -1) {
           state.post[postIndex] = updatedPost;
         }

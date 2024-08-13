@@ -24,7 +24,7 @@ const MenuAdmin = () => {
     { to: "", icon: <PeopleIcon />, text: "Quản lý người dùng" },
     { to: "posts", icon: <PostAddIcon />, text: "Quản lý bài đăng" },
     { to: "groups", icon: <GroupIcon />, text: "Quản lý nhóm" },
-    { to: "comments", icon: <CommentIcon />, text: "Quản lý bình luận" },
+    // { to: "comments", icon: <CommentIcon />, text: "Quản lý bình luận" },
   ];
 
   const handleItemClick = (to: string) => {

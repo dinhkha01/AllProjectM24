@@ -13,6 +13,7 @@ import {
   Input,
   message,
   List,
+  Badge,
 } from "antd";
 import {
   UserOutlined,
@@ -20,6 +21,7 @@ import {
   MessageOutlined,
   SendOutlined,
   EllipsisOutlined,
+  HeartFilled,
 } from "@ant-design/icons";
 import { RootState } from "../../store";
 import { post, users } from "../../config/interface";
@@ -29,6 +31,7 @@ import {
   updateReceiverFriends,
   updateUserNotify,
 } from "../../service/Login-Register/User";
+import { addCommentToPost, likePost } from "../../service/Login-Register/Post";
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
@@ -50,7 +53,33 @@ const ProfileUser = () => {
   const user = allUsers.find((u) => u.id === parsedUserId);
   const [friends, setFriends] = useState<any[]>([]);
   const [photos, setPhotos] = useState<any[]>([]);
+  const [activeCommentPostId, setActiveCommentPostId] = useState<number | null>(null);
+  const [commentContent, setCommentContent] = useState("");
 
+  const handleCommentSubmit = (postId: number, content: string) => {
+    if (content.trim()) {
+      const newComment = {
+        id: Date.now(),
+        userId: user?.id,
+        content: content.trim(),
+        date: new Date().toISOString(),
+        reactions: []
+      };
+
+      dispatch(addCommentToPost({ postId, comment: newComment }));
+      setCommentContent('');
+    }
+  };
+
+  const getUserAvatar = (userId: number) => {
+    const commentUser = allUsers.find(u => u.id === userId);
+    return commentUser?.avatar || currentUser?.avatar;
+  };
+
+  const getUserName = (userId: number) => {
+    const commentUser = allUsers.find(u => u.id === userId);
+    return commentUser?.name || currentUser?.name;
+  };
   const userPosts = posts.filter((post) => post.userId === user?.id);
   useEffect(() => {
     if (user?.id) {
@@ -156,6 +185,11 @@ const ProfileUser = () => {
         });
     }
   };
+  const handleLikeClick = (postId: number) => {
+    if (currentUser) {
+      dispatch(likePost({ postId, userId: currentUser.id }));
+    }
+  };
 
   if (!user) {
     return <div>User not found</div>;
@@ -233,159 +267,185 @@ const ProfileUser = () => {
           </Row>
         </div>
         <Tabs defaultActiveKey="1" style={{ padding: "0 16px" }}>
-          <TabPane tab="Bài viết" key="1">
-            {sortedPosts
-              .filter(post => 
-                post.status && 
-                post.privacy === "public" &&
-                (post.userId === user?.id || isFriend || post.userId === currentUser?.id)
-              )
-              .map((post) => (
-                <Card
-                  key={post.id}
-                  style={{ width: "100%", marginBottom: 16 }}
-                  actions={[
-                    <div
-                      key="like"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <HeartOutlined
-                        style={{
-                          fontSize: "20px",
-                          marginRight: "5px",
-                          color: "#FF69B4",
-                        }}
-                      />
-                      <span style={{ color: "#FF69B4" }}>Thích</span>
-                    </div>,
-                    <div
-                      key="comment"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <MessageOutlined
-                        style={{
-                          fontSize: "20px",
-                          marginRight: "5px",
-                          color: "#FF69B4",
-                        }}
-                      />
-                      <span style={{ color: "#FF69B4" }}>Bình luận</span>
-                    </div>,
-                    <div
-                      key="share"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <SendOutlined
-                        style={{
-                          fontSize: "20px",
-                          marginRight: "5px",
-                          color: "#FF69B4",
-                        }}
-                      />
-                      <span style={{ color: "#FF69B4" }}>Chia sẻ</span>
-                    </div>,
-                  ]}
+        <TabPane tab="Bài viết" key="1">
+          {sortedPosts
+            .filter(post => 
+              post.status && 
+              post.privacy === "public" &&
+              (post.userId === user?.id || isFriend || post.userId === currentUser?.id)
+            )
+            .map((post) => (
+              <Card
+                key={post.id}
+                style={{ width: "100%", marginBottom: 16 }}
+                actions={[
+                  <div
+                  key="like"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: post.like.length > 0 ? "#FF69B4" : "inherit",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLikeClick(post.id);
+                  }}
                 >
-                  <Meta
-                    avatar={<Avatar src={user.avatar} />}
-                    title={
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <div>
-                          <span style={{ fontWeight: "bold" }}>{user.name}</span>
-                          <span
-                            style={{
-                              fontSize: "12px",
-                              color: "#65676B",
-                              marginLeft: "8px",
-                            }}
-                          >
-                            {new Date(post.date).toLocaleString()}
-                          </span>
-                        </div>
-                        <EllipsisOutlined />
-                      </div>
-                    }
-                  />
-                  <div style={{ padding: "16px 0" }}>{post.content}</div>
-                  {post.img.length > 0 && (
-                    <div style={{ marginTop: "16px" }}>
-                      <Image.PreviewGroup>
-                        <div
+                  {currentUser && post.like.some((like: { userId: number }) => like.userId === currentUser.id) ? (
+                    <HeartFilled style={{
+                      fontSize: "20px",
+                      marginRight: "5px",
+                      color: "#FF69B4",
+                    }} />
+                  ) : (
+                    <HeartOutlined style={{
+                      fontSize: "20px",
+                      marginRight: "5px",
+                    }} />
+                  )}
+                  <span>Thích ({post.like.length})</span>
+                </div>,
+                  <div
+                    key="comment"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveCommentPostId(activeCommentPostId === post.id ? null : post.id);
+                    }}
+                  >
+                    <MessageOutlined
+                      style={{
+                        fontSize: "20px",
+                        marginRight: "5px",
+                        color: "#FF69B4",
+                      }}
+                    />
+                    <span style={{ color: "#FF69B4", marginRight: "5px" }}>Bình luận</span>
+                    <Badge
+                      count={post.comments?.length || ""}
+                      showZero
+                      style={{ backgroundColor: '#FF69B4', marginLeft: '5px' }}
+                    />
+                  </div>,
+                  
+                ]}
+              >
+                <Meta
+                  avatar={<Avatar src={user.avatar} />}
+                  title={
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <div>
+                        <span style={{ fontWeight: "bold" }}>{user.name}</span>
+                        <span
                           style={{
-                            display: "grid",
-                            gridGap: "2px",
-                            gridTemplateColumns: `repeat(${Math.min(
-                              post.img.length,
-                              3
-                            )}, 1fr)`,
+                            fontSize: "12px",
+                            color: "#65676B",
+                            marginLeft: "8px",
                           }}
                         >
-                          {post.img.map((imageUrl, index) => (
-                            <div
-                              key={index}
-                              style={{
-                                position: "relative",
-                                paddingTop: "100%",
-                                overflow: "hidden",
-                              }}
-                            >
-                              <img
-                                alt={`Post content ${index + 1}`}
-                                src={imageUrl}
-                                style={{
-                                  position: "absolute",
-                                  top: 0,
-                                  left: 0,
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                  borderRadius: "4px",
-                                }}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </Image.PreviewGroup>
+                          {new Date(post.date).toLocaleString()}
+                        </span>
+                      </div>
+                      <EllipsisOutlined />
                     </div>
-                  )}
-                  <Input
-                    placeholder="Viết bình luận..."
-                    prefix={
-                      <Avatar
-                        src={currentUser?.avatar}
-                        size={24}
-                        style={{ marginRight: "8px" }}
-                      />
-                    }
-                    style={{
-                      background: "#F0F2F5",
-                      border: "none",
-                      borderRadius: "20px",
-                      padding: "8px 12px",
-                      marginTop: "16px",
-                    }}
-                  />
-                </Card>
-              ))}
-          </TabPane>
+                  }
+                />
+                <div style={{ padding: "16px 0" }}>{post.content}</div>
+                {post.img.length > 0 && (
+                  <div style={{ marginTop: "16px" }}>
+                    <Image.PreviewGroup>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridGap: "2px",
+                          gridTemplateColumns: `repeat(${Math.min(
+                            post.img.length,
+                            3
+                          )}, 1fr)`,
+                        }}
+                      >
+                        {post.img.map((imageUrl, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              position: "relative",
+                              paddingTop: "100%",
+                              overflow: "hidden",
+                            }}
+                          >
+                            <img
+                              alt={`Post content ${index + 1}`}
+                              src={imageUrl}
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                borderRadius: "4px",
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </Image.PreviewGroup>
+                  </div>
+                )}
+                {activeCommentPostId === post.id && (
+                  <div style={{ marginTop: "16px" }}>
+                    <List
+                      itemLayout="horizontal"
+                      dataSource={post.comments || []}
+                      renderItem={(comment) => (
+                        <List.Item>
+                          <List.Item.Meta
+                            avatar={<Avatar src={getUserAvatar(comment.userId)} />}
+                            title={getUserName(comment.userId)}
+                            description={comment.content}
+                          />
+                        </List.Item>
+                      )}
+                    />
+                  </div>
+                )}
+                <Input
+                  placeholder="Viết bình luận..."
+                  value={commentContent}
+                  onChange={(e) => setCommentContent(e.target.value)}
+                  prefix={
+                    <Avatar
+                      src={currentUser?.avatar}
+                      size={24}
+                      style={{ marginRight: "8px" }}
+                    />
+                  }
+                  style={{
+                    background: "#F0F2F5",
+                    border: "none",
+                    borderRadius: "20px",
+                    padding: "8px 12px",
+                    marginTop: "16px",
+                  }}
+                  onPressEnter={() => {
+                    handleCommentSubmit(post.id, commentContent);
+                  }}
+                />
+              </Card>
+            ))}
+        </TabPane>
           <TabPane tab="Giới thiệu" key="2">
             <p>Thông tin giới thiệu về {user.name}</p>
           </TabPane>

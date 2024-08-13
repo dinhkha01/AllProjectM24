@@ -17,7 +17,7 @@ export interface users {
 
 export type FriendType = {
   userId: number;
-  status: "pending" | "accept" ;
+  status: "pending" | "accept" 
   add_at: string;
 };
 export type notyfiType = {
@@ -35,6 +35,19 @@ export interface post {
   date: string;
   id: number;
   privacy: 'public' | 'private';
+  comments: Comment[]
+  like:like[]
+}
+export interface Comment {
+  id: number;
+  postId: number;
+  userId: number;
+  content: string;
+  date: string;
+  reactions: any[];
+}
+export interface like{
+  userId:number;
 }
 
 

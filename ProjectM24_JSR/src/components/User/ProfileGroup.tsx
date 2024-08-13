@@ -15,6 +15,7 @@ import {
   message,
   Modal,
   Form,
+  List,
 } from "antd";
 import {
   UserOutlined,
@@ -57,16 +58,16 @@ const ProfileGroup = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [localAvatar, setLocalAvatar] = useState(group?.avatar);
-const [localCoverImg, setLocalCoverImg] = useState(group?.coverimg);
+  const [localCoverImg, setLocalCoverImg] = useState(group?.coverimg);
 
-useEffect(() => {
-  const updatedGroup = allGroups.find((g) => g.id === parsedGroupId);
-  if (updatedGroup) {
-    setGroups(updatedGroup);
-    setLocalAvatar(updatedGroup.avatar);
-    setLocalCoverImg(updatedGroup.coverimg);
-  }
-}, [allGroups, parsedGroupId]);
+  useEffect(() => {
+    const updatedGroup = allGroups.find((g) => g.id === parsedGroupId);
+    if (updatedGroup) {
+      setGroups(updatedGroup);
+      setLocalAvatar(updatedGroup.avatar);
+      setLocalCoverImg(updatedGroup.coverimg);
+    }
+  }, [allGroups, parsedGroupId]);
 
   const sortedPosts = useMemo(() => {
     return [...(group?.postGroup || [])].sort(
@@ -87,19 +88,19 @@ useEffect(() => {
     const imageRef = ref(storage, `group-avatars/${group.id}`);
     await uploadBytes(imageRef, file);
     const url = await getDownloadURL(imageRef);
-  
+
     dispatch(pushAvatar({ groupId: group.id, avatar: url }));
     setLocalAvatar(url); // Cập nhật state local
     message.success("Ảnh đại diện nhóm đã được cập nhật");
   };
-  
+
   const handleCoverUpload = async (file: RcFile) => {
     if (!group) return;
     const imageRef = ref(storage, `group-covers/${group.id}`);
     await uploadBytes(imageRef, file);
     const url = await getDownloadURL(imageRef);
-    
-    dispatch(pushCoverImg({groupId: group.id, coverimg: url}));
+
+    dispatch(pushCoverImg({ groupId: group.id, coverimg: url }));
     setLocalCoverImg(url); // Cập nhật state local
     message.success("Ảnh bìa nhóm đã được cập nhật");
   };
@@ -114,14 +115,14 @@ useEffect(() => {
   };
 
   const handlePostSubmit = async () => {
-    try {
+
       if (!group?.id) {
         throw new Error("Group ID is missing");
       }
-  
+
       // Validate form fields
       const { content } = await form.validateFields();
-  
+
       // Upload images
       const imageUrls = await Promise.all(
         fileList.map(async (file) => {
@@ -130,34 +131,28 @@ useEffect(() => {
           return getDownloadURL(snapshot.ref);
         })
       );
-  
+
       // Prepare post data
       const postData = {
         content,
         img: imageUrls,
         userId: currentUser.id,
       };
-  
+
       // Dispatch action to create post
       const result = await dispatch(createGroupPost({ groupId: group.id, postData }));
-      
+
       if (createGroupPost.rejected.match(result)) {
         throw new Error(result.payload as string);
       }
-  
+
       // Success handling
       message.success("Bài viết đã được đăng thành công");
       setIsModalVisible(false);
       form.resetFields();
-      setFileList([]);
-  
-    } catch (error) {
-      // Error handling
-      console.error("Error posting:", error);
-      message.error(error instanceof Error ? error.message : "Có lỗi xảy ra khi đăng bài viết");
-    }
+      setFileList([]);   
   };
-  
+
   const uploadProps: UploadProps = {
     onRemove: (file) => {
       const index = fileList.indexOf(file);
@@ -342,23 +337,7 @@ useEffect(() => {
                       />
                       <span style={{ color: "#FF69B4" }}>Bình luận</span>
                     </div>,
-                    <div
-                      key="share"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <SendOutlined
-                        style={{
-                          fontSize: "20px",
-                          marginRight: "5px",
-                          color: "#FF69B4",
-                        }}
-                      />
-                      <span style={{ color: "#FF69B4" }}>Chia sẻ</span>
-                    </div>,
+
                   ]}
                 >
                   <Meta
@@ -452,15 +431,28 @@ useEffect(() => {
               );
             })}
           </TabPane>
-          <TabPane tab="Giới thiệu" key="2">
-            <p>Thông tin giới thiệu về nhóm {group.groupName}</p>
-          </TabPane>
+          
           <TabPane tab="Thành viên" key="3">
-            <p>Danh sách thành viên của nhóm {group.groupName}</p>
+            <List
+              grid={{ gutter: 16, column: 4 }}
+              dataSource={group.members}
+              renderItem={(member) => {
+                const user = allUsers.find(u => u.id === member.userId);
+                return (
+                  <List.Item>
+                    <Card>
+                      <Card.Meta
+                        avatar={<Avatar src={user?.avatar} size={64} />}
+                        title={user?.name}
+                        description={member.role ? "Người tạo nhóm" : "Thành viên"}
+                      />
+                    </Card>
+                  </List.Item>
+                );
+              }}
+            />
           </TabPane>
-          <TabPane tab="Ảnh" key="4">
-            <p>Ảnh của nhóm {group.groupName}</p>
-          </TabPane>
+          
         </Tabs>
       </Card>
 

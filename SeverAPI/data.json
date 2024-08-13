@@ -67,7 +67,7 @@
       "name": "hi",
       "phone": "1",
       "role": false,
-      "avatar": "",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F4?alt=media&token=ceb74490-2e90-4d08-88fa-a0169cdddf43",
       "banner": "",
       "dob": "",
       "date": "",
@@ -133,7 +133,9 @@
       "date": "2024-07-30T08:09:02.083Z",
       "id": 3,
       "privacy": "public",
-      "status": true
+      "status": true,
+      "comments": [],
+      "like": []
     },
     {
       "content": "hi",
@@ -144,7 +146,31 @@
       "date": "2024-07-30T13:51:22.957Z",
       "id": 4,
       "privacy": "public",
-      "status": true
+      "status": true,
+      "like": [
+        {
+          "userId": 3
+        },
+        {
+          "userId": 2
+        }
+      ],
+      "comments": [
+        {
+          "id": 1723522990453,
+          "userId": 3,
+          "content": "hi",
+          "date": "2024-08-13T04:23:10.453Z",
+          "reactions": []
+        },
+        {
+          "id": 1723532039751,
+          "userId": 3,
+          "content": "k",
+          "date": "2024-08-13T06:53:59.751Z",
+          "reactions": []
+        }
+      ]
     },
     {
       "content": "hu",
@@ -160,7 +186,39 @@
       "date": "2024-07-31T03:14:13.385Z",
       "id": 6,
       "privacy": "public",
-      "status": true
+      "status": true,
+      "like": [
+        {
+          "userId": 3
+        },
+        {
+          "userId": 2
+        }
+      ],
+      "comments": [
+        {
+          "userId": 2,
+          "content": "helo m",
+          "date": "2024-08-13T03:39:28.511Z"
+        },
+        {
+          "userId": 2,
+          "content": "sao thằng kia giống khỉ quá vậy",
+          "date": "2024-08-13T03:39:48.134Z"
+        },
+        {
+          "userId": 3,
+          "content": "ừ giống thiệc",
+          "date": "2024-08-13T03:40:09.229Z"
+        },
+        {
+          "id": 1723521014020,
+          "userId": 3,
+          "content": "alo",
+          "date": "2024-08-13T03:50:14.020Z",
+          "reactions": []
+        }
+      ]
     }
   ],
   "group": [
@@ -201,10 +259,7 @@
         {
           "userId": 2,
           "content": " như qq",
-          "img": [
-            "https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/454375239_1102727524753879_5478703130109379948_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=833d8c&_nc_ohc=BB67MeoieP0Q7kNvgEJrVSe&_nc_ht=scontent.fsgn2-7.fna&oh=00_AYDeyDnsXIrwhEz-B_qtKORjfuRDq-wgjNlYkmwiv4wWrQ&oe=66B781FE",
-            "https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/454375239_1102727524753879_5478703130109379948_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=833d8c&_nc_ohc=BB67MeoieP0Q7kNvgEJrVSe&_nc_ht=scontent.fsgn2-7.fna&oh=00_AYDeyDnsXIrwhEz-B_qtKORjfuRDq-wgjNlYkmwiv4wWrQ&oe=66B781FE"
-          ],
+          "img": [],
           "dateat": "2024-08-06T13:48:17.225Z"
         },
         {
@@ -283,7 +338,7 @@
         }
       ],
       "postGroup": [],
-      "status": true,
+      "status": false,
       "id": 4
     }
   ]

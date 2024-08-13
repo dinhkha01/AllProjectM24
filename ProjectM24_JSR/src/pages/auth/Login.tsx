@@ -20,8 +20,6 @@ const Login = () => {
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (shouldRedirect && currentUser) {
-      console.log(currentUser.email);
-
       timer = setTimeout(() => {
         if (currentUser.role === true) {
           navigate("/admin");
@@ -31,12 +29,12 @@ const Login = () => {
       }, 2000);
     }
     return () => clearTimeout(timer);
-  }, [shouldRedirect, currentUser, navigate]);
+  }, [shouldRedirect, currentUser]);
 
   const onFinish = async (values: { email: string; password: string }) => {
     try {
       const result = await dispatch(login(values)).unwrap();
-  
+      
       if (!result.user.status) {
         message.error("Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
         return;

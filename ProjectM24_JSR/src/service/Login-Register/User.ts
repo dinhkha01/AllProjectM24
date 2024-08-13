@@ -251,7 +251,7 @@
   );
 /////////////////
 export const banOrUnban: any = createAsyncThunk("auth/banOrUnban",async({userId,status}:{userId:number,status:boolean})=>{
-  // console.log(use);
+
   
     const res = await api.patch("users/"+userId,{status})
     return res.data

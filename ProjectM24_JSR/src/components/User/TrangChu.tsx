@@ -14,9 +14,12 @@ import {
   Upload,
   message,
   Spin,
+  List,
+  Badge,
 } from "antd";
 import {
   EllipsisOutlined,
+  HeartFilled,
   HeartOutlined,
   MessageOutlined,
   PlusOutlined,
@@ -26,7 +29,7 @@ import {
 import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../config/firebase";
-import { createPost, deletePost, getAllPost, updatePostPrivacy } from "../../service/Login-Register/Post";
+import { addCommentToPost, createPost, deletePost, getAllPost, likePost, updatePostPrivacy } from "../../service/Login-Register/Post";
 import { getAllUsers } from "../../service/Login-Register/User";
 import { RootState } from "../../store";
 
@@ -42,6 +45,9 @@ const TrangChu = () => {
   const [optionsModalVisible, setOptionsModalVisible] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeCommentPostId, setActiveCommentPostId] = useState<number | null>(null);
+  const [commentContent, setCommentContent] = useState("");
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const posts = useSelector((state: RootState) => state.post.post);
@@ -53,7 +59,7 @@ const TrangChu = () => {
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
   }, [posts]);
-  
+
   const getUserName = (userId: number) => {
     const user = users.find((user) => user.id === userId);
     return user ? user.name : "Người dùng ẩn danh";
@@ -109,7 +115,9 @@ const TrangChu = () => {
         userId: currentUser?.id,
         date: new Date().toISOString(),
         privacy,
-        status: true
+        status: true,
+        comments: [],
+        like: []
       };
 
       dispatch(createPost(postData));
@@ -201,6 +209,27 @@ const TrangChu = () => {
     }
   };
 
+  const handleCommentSubmit = (postId: number, content: string) => {
+    if (content.trim()) {
+      const newComment = {
+        id: Date.now(),
+        userId: currentUser?.id,
+        content: content.trim(),
+        date: new Date().toISOString(),
+        reactions: []
+      };
+
+      dispatch(addCommentToPost({ postId, comment: newComment }));
+      setCommentContent('');
+    }
+  };
+  const handleLikeClick = (postId: number) => {
+    if (currentUser) {
+      dispatch(likePost({ postId, userId: currentUser.id }));
+    }
+  };
+
+
   return (
     <Spin spinning={loading} tip="Đang tải...">
       <div
@@ -221,7 +250,7 @@ const TrangChu = () => {
             avatar={
               <Avatar
                 src={currentUser?.avatar}
-                onClick={(e:any) => {
+                onClick={(e: any) => {
                   e.stopPropagation();
                   handleAvatarClick(currentUser?.id);
                 }}
@@ -234,14 +263,14 @@ const TrangChu = () => {
                   {currentUser?.name}, bạn đang nghĩ gì thế?
                 </span>
                 <PlusOutlined style={{ marginLeft: "auto" }} />
-              </div>  
+              </div>
             }
           />
         </Card>
 
         {sortedPosts
-          .filter((post) => 
-            post.status && 
+          .filter((post) =>
+            post.status &&
             (post.privacy === 'public' || post.userId === currentUser?.id)
           )
           .map((post) => (
@@ -256,10 +285,26 @@ const TrangChu = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    color: post.like.length > 0 ? "#FF69B4" : "inherit",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLikeClick(post.id);
                   }}
                 >
-                  <HeartOutlined style={{ fontSize: "20px", marginRight: "5px" }} />
-                  <span>Thích</span>
+                  {currentUser && post.like.some((like: { userId: number }) => like.userId === currentUser.id) ? (
+                    <HeartFilled style={{
+                      fontSize: "20px",
+                      marginRight: "5px",
+                      color: "#FF69B4",
+                    }} />
+                  ) : (
+                    <HeartOutlined style={{
+                      fontSize: "20px",
+                      marginRight: "5px",
+                    }} />
+                  )}
+                  <span>Thích ({post.like.length})</span>
                 </div>,
                 <div
                   key="comment"
@@ -267,24 +312,28 @@ const TrangChu = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    cursor: "pointer",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveCommentPostId(activeCommentPostId === post.id ? null : post.id);
                   }}
                 >
                   <MessageOutlined
-                    style={{ fontSize: "20px", marginRight: "5px" }}
+                    style={{
+                      fontSize: "20px",
+                      marginRight: "5px",
+                      color: "#FF69B4",
+                    }}
                   />
-                  <span>Bình luận</span>
+                  <span style={{ color: "#FF69B4", marginRight: "5px" }}>Bình luận</span>
+                  <Badge
+                    count={post.comments?.length || ""}
+                    showZero
+                    style={{ backgroundColor: '#FF69B4', marginLeft: '5px' }}
+                  />
                 </div>,
-                <div
-                  key="share"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <SendOutlined style={{ fontSize: "20px", marginRight: "5px" }} />
-                  <span>Chia sẻ</span>
-                </div>,
+
               ]}
             >
               {currentUser?.id === post.userId && (
@@ -305,9 +354,9 @@ const TrangChu = () => {
                   <EllipsisOutlined style={{ fontSize: "20px" }} />
                 </div>
               )}
-              
+
               <Meta
-                avatar={<Avatar src={getUserAvatar(post.userId)} onClick={(e:any) => {
+                avatar={<Avatar src={getUserAvatar(post.userId)} onClick={(e: any) => {
                   e.stopPropagation();
                   handleAvatarClick(post.userId);
                 }} style={{ cursor: "pointer" }} />}
@@ -378,6 +427,46 @@ const TrangChu = () => {
                   </div>
                 )}
               </div>
+
+              {activeCommentPostId === post.id && (
+                <div style={{ marginTop: "16px" }}>
+                  <List
+                    itemLayout="horizontal"
+                    dataSource={post.comments || []}
+                    renderItem={(comment) => (
+                      <List.Item>
+                        <List.Item.Meta
+                          avatar={<Avatar src={getUserAvatar(comment.userId)} />}
+                          title={getUserName(comment.userId)}
+                          description={comment.content}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                  <Input
+                    placeholder="Viết bình luận..."
+                    value={commentContent}
+                    onChange={(e) => setCommentContent(e.target.value)}
+                    prefix={
+                      <Avatar
+                        src={currentUser?.avatar}
+                        size={24}
+                        style={{ marginRight: "8px" }}
+                      />
+                    }
+                    style={{
+                      background: "#F0F2F5",
+                      border: "none",
+                      borderRadius: "20px",
+                      padding: "8px 12px",
+                      marginTop: "16px",
+                    }}
+                    onPressEnter={() => {
+                      handleCommentSubmit(post.id, commentContent);
+                    }}
+                  />
+                </div>
+              )}
             </Card>
           ))}
 
@@ -434,10 +523,10 @@ const TrangChu = () => {
               }
             }}
             items={[
-              { 
-                key: 'privacy', 
-                label: selectedPostId && posts.find(p => p.id === selectedPostId)?.privacy === "public" 
-                  ? "Đổi trạng thái thành riêng tư" 
+              {
+                key: 'privacy',
+                label: selectedPostId && posts.find(p => p.id === selectedPostId)?.privacy === "public"
+                  ? "Đổi trạng thái thành riêng tư"
                   : "Đổi trạng thái thành công khai"
               },
               { key: 'delete', label: 'Xóa bài viết' },
@@ -445,7 +534,9 @@ const TrangChu = () => {
           />
         </Modal>
       </div>
+
     </Spin>
+
   );
 };
 

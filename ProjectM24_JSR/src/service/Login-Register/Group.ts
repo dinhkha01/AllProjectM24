@@ -51,7 +51,7 @@ export const pushCoverImg:any = createAsyncThunk(
 export const createGroupPost: any = createAsyncThunk(
   "group/createGroupPost",
   async ({ groupId, postData }: { groupId: number; postData: Omit<GroupPost, 'idPostGroup' | 'dateat'> }, { getState, rejectWithValue }) => {
-    try {
+    
       const state: RootState = getState() as RootState;
       const group = state.group.groups.find(g => g.id === groupId);
       
@@ -60,9 +60,9 @@ export const createGroupPost: any = createAsyncThunk(
       }
 
       const newPost: GroupPost = {
-        idPostGroup: Date.now(), // Tạo một ID duy nhất dựa trên thời gian hiện tại
+        idPostGroup: Date.now(), 
         ...postData,
-        dateat: new Date().toISOString() // Thêm thời gian hiện tại
+        dateat: new Date().toISOString() 
       };
 
       const updatedPostGroup = [...(group.postGroup || []), newPost];
@@ -72,11 +72,9 @@ export const createGroupPost: any = createAsyncThunk(
         postGroup: updatedPostGroup
       });
 
-      // Trả về dữ liệu mới, giả định rằng server trả về group đã được cập nhật
+  
       return { groupId, post: newPost, updatedGroup: response.data };
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || "An error occurred");
-    }
+
   }
 );
 export const addUserInGroup: any = createAsyncThunk(
@@ -159,7 +157,7 @@ export const groupSlice = createSlice({
           state.currentGroup.coverimg = action.payload.coverimg;
         }
       }).addCase(createGroupPost.fulfilled, (state, action: PayloadAction<{ groupId: number; post: GroupPost; updatedGroup: Group }>) => {
-        const { groupId, post, updatedGroup } = action.payload;
+        const { groupId,  updatedGroup } = action.payload;
         
         // Cập nhật group trong danh sách groups
         const groupIndex = state.groups.findIndex(g => g.id === groupId);
