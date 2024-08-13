@@ -173,7 +173,12 @@ const AdminGroup = () => {
           columns={columns} 
           dataSource={filteredGroups}
           rowKey="id"
-          pagination={{ pageSize: 10 }}
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: false,
+            showQuickJumper: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+          }}
         />
       </div>
     </div>

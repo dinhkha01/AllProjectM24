@@ -150,9 +150,11 @@ const deletePostt =(postId: number)=>{
             getUserInfo(post.userId).name.toLowerCase().includes(searchText.toLowerCase())
           )}
           rowKey="id"
-          pagination={{ pageSize: 10 }}
-          onChange={(pagination, filters, sorter) => {
-            // Handle table change if needed
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: false,
+            showQuickJumper: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
           }}
         />
       </div>

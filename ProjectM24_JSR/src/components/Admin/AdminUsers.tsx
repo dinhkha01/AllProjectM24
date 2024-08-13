@@ -24,19 +24,16 @@ const AdminUsers = () => {
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-      
-       dispatch(deleteUser(userId))
-       dispatch(getAllUsers());
-      
+        dispatch(deleteUser(userId));
+        dispatch(getAllUsers());
       },
     });
   };
-  const banOrUnnban =(userId:number, status:boolean)=>{
-    console.log(userId);
-    
-    dispatch(banOrUnban({userId,status}))
-    dispatch(getAllUsers())
-  }
+
+  const banOrUnnban = (userId: number, status: boolean) => {
+    dispatch(banOrUnban({ userId, status }));
+    dispatch(getAllUsers());
+  };
 
   const columns: ColumnsType<users> = [
     {
@@ -95,9 +92,7 @@ const AdminUsers = () => {
           <Button 
             type={record.status ? "default" : "primary"}
             icon={record.status ? <StopOutlined /> : <CheckCircleOutlined />}
-            onClick={()=>banOrUnnban(record.id,!record.status
-
-            )}
+            onClick={() => banOrUnnban(record.id, !record.status)}
           >
             {record.status ? 'Ban' : 'Unban'}
           </Button>
@@ -130,7 +125,12 @@ const AdminUsers = () => {
           columns={columns} 
           dataSource={users} 
           rowKey="id"
-          pagination={{ pageSize: 10 }}
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: false,
+            showQuickJumper: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+          }}
         />
       </div>
     </div>

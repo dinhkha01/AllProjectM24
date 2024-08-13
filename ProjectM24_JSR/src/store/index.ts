@@ -3,7 +3,7 @@ import { reducer as reducerUser } from "../service/Login-Register/User";
 import { reducer as reducerPost } from "../service/Login-Register/Post";
 import { reducer as reducerGroup } from "../service/Login-Register/Group";
 
-export const store = configureStore({
+export const store  = configureStore({
   reducer: {
     users: reducerUser,
     post: reducerPost,

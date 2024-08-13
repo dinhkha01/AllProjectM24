@@ -53,7 +53,11 @@ export const createGroupPost: any = createAsyncThunk(
   async ({ groupId, postData }: { groupId: number; postData: Omit<GroupPost, 'idPostGroup' | 'dateat'> }, { getState, rejectWithValue }) => {
     
       const state: RootState = getState() as RootState;
-      const group = state.group.groups.find(g => g.id === groupId);
+
+      
+      const group = state.group.groups.find( g => g.id === groupId);
+  
+      
       
       if (!group) {
         throw new Error("Group not found");
