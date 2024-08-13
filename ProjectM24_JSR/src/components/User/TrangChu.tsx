@@ -25,6 +25,8 @@ import {
   PlusOutlined,
   SendOutlined,
   UploadOutlined,
+  LeftOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -47,12 +49,14 @@ const TrangChu = () => {
   const [loading, setLoading] = useState(true);
   const [activeCommentPostId, setActiveCommentPostId] = useState<number | null>(null);
   const [commentContent, setCommentContent] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const posts = useSelector((state: RootState) => state.post.post);
   const currentUser = useSelector((state: RootState) => state.users.currentUser);
   const users = useSelector((state: RootState) => state.users.users);
+  
 
   const sortedPosts = useMemo(() => {
     return [...posts].sort(
@@ -152,10 +156,12 @@ const TrangChu = () => {
     setPreviewImage(imageUrl);
     setPreviewVisible(true);
     setCurrentPostImages(postImages);
+    setCurrentImageIndex(postImages.indexOf(imageUrl));
   };
 
   const handlePreviewClose = () => {
     setPreviewVisible(false);
+    setCurrentImageIndex(0);
   };
 
   const handlePostOptionClick = (postId: number, option: string) => {
@@ -223,12 +229,12 @@ const TrangChu = () => {
       setCommentContent('');
     }
   };
+
   const handleLikeClick = (postId: number) => {
     if (currentUser) {
       dispatch(likePost({ postId, userId: currentUser.id }));
     }
   };
-
 
   return (
     <Spin spinning={loading} tip="Đang tải...">
@@ -333,7 +339,6 @@ const TrangChu = () => {
                     style={{ backgroundColor: '#FF69B4', marginLeft: '5px' }}
                   />
                 </div>,
-
               ]}
             >
               {currentUser?.id === post.userId && (
@@ -387,43 +392,44 @@ const TrangChu = () => {
               <div>
                 {post.img.length > 0 && (
                   <div style={{ marginTop: "16px" }}>
-                    <Image.PreviewGroup>
-                      <div
-                        style={{
-                          display: "grid",
-                          gridGap: "2px",
-                          gridTemplateColumns: `repeat(${Math.min(
-                            post.img.length,
-                            3
-                          )}, 1fr)`,
-                        }}
-                      >
-                        {post.img.map((imageUrl, index) => (
-                          <div
-                            key={index}
+                    <div
+                      style={{
+                        display: "grid",
+                        gridGap: "2px",
+                        gridTemplateColumns: `repeat(${Math.min(post.img.length, 3)}, 1fr)`,
+                      }}
+                    >
+                      {post.img.map((imageUrl, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            position: "relative",
+                            paddingTop: "100%",
+                            overflow: "hidden",
+                            cursor: "pointer",
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentImageIndex(index);
+                            handlePreview(imageUrl, post.img);
+                          }}
+                        >
+                          <img
+                            alt={`Post content ${index + 1}`}
+                            src={imageUrl}
                             style={{
-                              position: "relative",
-                              paddingTop: "100%",
-                              overflow: "hidden",
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              borderRadius: "4px",
                             }}
-                          >
-                            <img
-                              alt={`Post content ${index + 1}`}
-                              src={imageUrl}
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                borderRadius: "4px",
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </Image.PreviewGroup>
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -507,8 +513,25 @@ const TrangChu = () => {
           visible={previewVisible}
           footer={null}
           onCancel={handlePreviewClose}
+          width="50%"
         >
-          <Image src={previewImage} width="100%" />
+          <div style={{ position: "relative" }}>
+            <Image src={currentPostImages[currentImageIndex]} width="100%" />
+            {currentImageIndex > 0 && (
+              <Button
+                style={{ position: "absolute", top: "50%", left: "10px" }}
+                onClick={() => setCurrentImageIndex(currentImageIndex - 1)}
+                icon={<LeftOutlined />}
+              />
+            )}
+            {currentImageIndex < currentPostImages.length - 1 && (
+              <Button
+                style={{ position: "absolute", top: "50%", right: "10px" }}
+                onClick={() => setCurrentImageIndex(currentImageIndex + 1)}
+                icon={<RightOutlined />}
+              />
+            )}
+          </div>
         </Modal>
 
         <Modal
@@ -534,9 +557,7 @@ const TrangChu = () => {
           />
         </Modal>
       </div>
-
     </Spin>
-
   );
 };
 
