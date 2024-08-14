@@ -32,7 +32,7 @@ import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../config/firebase";
 import { addCommentToPost, createPost, deletePost, getAllPost, likePost, updatePostPrivacy } from "../../service/Login-Register/Post";
-import { getAllUsers } from "../../service/Login-Register/User";
+import { addNotificationToUser, getAllUsers } from "../../service/Login-Register/User";
 import { RootState } from "../../store";
 
 const { Meta } = Card;
@@ -215,10 +215,10 @@ const TrangChu = () => {
     }
   };
   const handleCommentSubmit = (postId: number, content: string) => {
-    if (content.trim()) {
+    if (content.trim() && currentUser) {
       const newComment = {
         id: Date.now(),
-        userId: currentUser?.id,
+        userId: currentUser.id,
         content: content.trim(),
         date: new Date().toISOString(),
         reactions: []
@@ -226,6 +226,19 @@ const TrangChu = () => {
   
       dispatch(addCommentToPost({ postId, comment: newComment }));
       setCommentContent('');
+  
+      // Find the post and its author
+      const post = posts.find(p => p.id === postId);
+      if (post && post.userId !== currentUser.id) {
+        // If the post author is not the current user, send a notification
+        const notification = {
+          status:false,
+          userId: currentUser.id,
+          content: `đã bình luận về bài viết của bạn`,
+          add_at: new Date().toISOString(),
+        };
+        dispatch(addNotificationToUser({ userId: post.userId, notification }));
+      }
     }
   };
 

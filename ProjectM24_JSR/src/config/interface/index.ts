@@ -21,9 +21,11 @@ export type FriendType = {
   add_at: string;
 };
 export type notyfiType = {
+
   userId: number;
   content: string;
-  date: string;
+  add_at: string;
+  status:boolean;
 };
 /////////////////////////////////////////////////
 export interface post {

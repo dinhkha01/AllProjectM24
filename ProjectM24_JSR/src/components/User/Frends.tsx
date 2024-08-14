@@ -83,6 +83,7 @@ const Friends = () => {
               const newNotify = [
                 ...(targetUser.notyfi || []),
                 {
+                  status:false,
                   userId: currentUser.id,
                   content: ` đã gửi lời mời kết bạn`,
                   add_at: new Date().toISOString(),

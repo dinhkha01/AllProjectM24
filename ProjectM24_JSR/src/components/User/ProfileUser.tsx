@@ -170,6 +170,7 @@ const ProfileUser = () => {
           const newNotify = [
             ...(user.notyfi || []),
             {
+              status:false,
               userId: currentUser.id,
               content: ` đã gửi lời mời kết bạn`,
               add_at: new Date().toISOString(),

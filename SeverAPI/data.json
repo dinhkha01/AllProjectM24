@@ -35,7 +35,26 @@
           "add_at": "2024-08-09T01:53:19.046Z"
         }
       ],
-      "notyfi": [],
+      "notyfi": [
+        {
+          "status": true,
+          "userId": 3,
+          "content": "đã bình luận về bài viết của bạn",
+          "add_at": "2024-08-14T02:15:51.511Z"
+        },
+        {
+          "status": true,
+          "userId": 3,
+          "content": "đã bình luận về bài viết của bạn",
+          "add_at": "2024-08-14T02:16:28.682Z"
+        },
+        {
+          "status": true,
+          "userId": 3,
+          "content": "đã bình luận về bài viết của bạn",
+          "add_at": "2024-08-14T02:31:25.085Z"
+        }
+      ],
       "status": true
     },
     {
@@ -57,7 +76,14 @@
           "add_at": "2024-08-09T01:53:19.080Z"
         }
       ],
-      "notyfi": [],
+      "notyfi": [
+        {
+          "status": true,
+          "userId": 2,
+          "content": "đã bình luận về bài viết của bạn",
+          "add_at": "2024-08-14T02:08:36.303Z"
+        }
+      ],
       "status": true
     },
     {
@@ -173,6 +199,41 @@
           "content": "k",
           "date": "2024-08-13T06:53:59.751Z",
           "reactions": []
+        },
+        {
+          "id": 1723599889226,
+          "userId": 2,
+          "content": "đẹp gái thế",
+          "date": "2024-08-14T01:44:49.226Z",
+          "reactions": []
+        },
+        {
+          "id": 1723600195722,
+          "userId": 3,
+          "content": "hi",
+          "date": "2024-08-14T01:49:55.722Z",
+          "reactions": []
+        },
+        {
+          "id": 1723600980142,
+          "userId": 2,
+          "content": "alo",
+          "date": "2024-08-14T02:03:00.142Z",
+          "reactions": []
+        },
+        {
+          "id": 1723601316303,
+          "userId": 2,
+          "content": "em ơi",
+          "date": "2024-08-14T02:08:36.303Z",
+          "reactions": []
+        },
+        {
+          "id": 1723601731330,
+          "userId": 3,
+          "content": "gelo",
+          "date": "2024-08-14T02:15:31.330Z",
+          "reactions": []
         }
       ]
     },
@@ -230,6 +291,55 @@
           "userId": 2,
           "content": "a",
           "date": "2024-08-13T15:42:49.830Z",
+          "reactions": []
+        },
+        {
+          "id": 1723599896645,
+          "userId": 2,
+          "content": "e",
+          "date": "2024-08-14T01:44:56.645Z",
+          "reactions": []
+        },
+        {
+          "id": 1723600188328,
+          "userId": 3,
+          "content": "nè",
+          "date": "2024-08-14T01:49:48.328Z",
+          "reactions": []
+        },
+        {
+          "id": 1723601208383,
+          "userId": 3,
+          "content": "alo",
+          "date": "2024-08-14T02:06:48.383Z",
+          "reactions": []
+        },
+        {
+          "id": 1723601751510,
+          "userId": 3,
+          "content": "e",
+          "date": "2024-08-14T02:15:51.510Z",
+          "reactions": []
+        },
+        {
+          "id": 1723601788682,
+          "userId": 3,
+          "content": "ơ kìa",
+          "date": "2024-08-14T02:16:28.682Z",
+          "reactions": []
+        },
+        {
+          "id": 1723602648932,
+          "userId": 2,
+          "content": "e",
+          "date": "2024-08-14T02:30:48.932Z",
+          "reactions": []
+        },
+        {
+          "id": 1723602685084,
+          "userId": 3,
+          "content": "heheehehehe",
+          "date": "2024-08-14T02:31:25.084Z",
           "reactions": []
         }
       ]

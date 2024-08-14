@@ -261,6 +261,57 @@ export const deleteUser :any = createAsyncThunk("user/deleteUser",async (userId:
   const res = await api.delete("users/"+userId)
   return res.data
 })
+///////////////////////
+export const addNotificationToUser: any = createAsyncThunk(
+  "user/addNotificationToUser",
+  async ({ userId, notification }: { userId: number; notification: any }, { getState, rejectWithValue }) => {
+    try {
+      const state: any = getState();
+      const user = state.users.users.find((u: users) => u.id === userId);
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const updatedNotyfi = [...(user.notyfi || []), notification];
+
+      const response = await api.patch(`users/${userId}`, {
+        notyfi: updatedNotyfi
+      });
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+////////////////////////
+export const markAllNotificationsAsRead: any = createAsyncThunk(
+  "user/markAllNotificationsAsRead",
+  async (userId: number, { getState, rejectWithValue }) => {
+    try {
+      const state: any = getState();
+      const user = state.users.users.find((u: users) => u.id === userId);
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const updatedNotyfi = user.notyfi.map((notification: any) => ({
+        ...notification,
+        status: true
+      }));
+
+      const response = await api.patch(`users/${userId}`, {
+        notyfi: updatedNotyfi
+      });
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
   // Slice
   export const authSlice = createSlice({
@@ -389,6 +440,21 @@ export const deleteUser :any = createAsyncThunk("user/deleteUser",async (userId:
          
         }). addCase (deleteUser.fulfilled,(state,action)=>{
           state.users= state.users.filter(users=>users.id!==action.payload)
+        }).addCase(addNotificationToUser.fulfilled, (state, action) => {
+          const updatedUser = action.payload;
+          const index = state.users.findIndex(user => user.id === updatedUser.id);
+          if (index !== -1) {
+            state.users[index] = updatedUser;
+          }
+        }).addCase(markAllNotificationsAsRead.fulfilled, (state, action) => {
+          const updatedUser = action.payload;
+          if (state.currentUser && state.currentUser.id === updatedUser.id) {
+            state.currentUser = updatedUser;
+          }
+          const index = state.users.findIndex(user => user.id === updatedUser.id);
+          if (index !== -1) {
+            state.users[index] = updatedUser;
+          }
         })
     },
   });

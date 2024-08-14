@@ -12,7 +12,6 @@ import { notyfiType } from "../../config/interface";
 
 const { Title, Text } = Typography;
 
-
 interface CurrentUser {
   id: number;
   notyfi: notyfiType[];
@@ -25,24 +24,19 @@ const Notify = () => {
     (state: RootState) => state.users.currentUser
   ) as CurrentUser | null;
   const allUsers = useSelector((state: RootState) => state.users.users);
-  const [friendRequests, setFriendRequests] = useState<notyfiType[]>([]);
+  const [notifications, setNotifications] = useState<notyfiType[]>([]);
 
   useEffect(() => {
     dispatch(getAllUsers());
   }, [dispatch]);
 
-  const isAcceptedFriend = (userId: number) => {
-    return currentUser?.friends.some(
-      (friend) => friend.userId === userId && friend.status === "accept"
-    );
-  };
-
   useEffect(() => {
     if (currentUser && currentUser.notyfi) {
-      const filteredRequests = currentUser.notyfi.filter(
-        (request) => !isAcceptedFriend(request.userId)
+      // Sắp xếp thông báo theo thời gian mới nhất
+      const sortedNotifications = [...currentUser.notyfi].sort((a, b) => 
+        new Date(b.add_at).getTime() - new Date(a.add_at).getTime()
       );
-      setFriendRequests(filteredRequests);
+      setNotifications(sortedNotifications);
     }
   }, [currentUser]);
 
@@ -56,19 +50,14 @@ const Notify = () => {
       )
         .then(() => {
           message.success("Đã chấp nhận lời mời kết bạn");
-          // Remove the accepted request from the local state
-          setFriendRequests(
-            friendRequests.filter((request) => request.userId !== userId)
-          );
-   
+          setNotifications(notifications.filter((notif) => notif.userId !== userId));
         })
         .catch((error: any) => {
-          message.error(
-            "Không thể chấp nhận lời mời kết bạn: " + error.message
-          );
+          message.error("Không thể chấp nhận lời mời kết bạn: " + error.message);
         });
     }
   };
+
   const handleDecline = (userId: number) => {
     if (currentUser) {
       dispatch(
@@ -79,14 +68,7 @@ const Notify = () => {
       )
         .then(() => {
           message.info("Đã từ chối lời mời kết bạn");
-          
-          // Xóa yêu cầu kết bạn khỏi danh sách hiển thị
-          setFriendRequests(
-            friendRequests.filter((request) => request.userId !== userId)
-          );
-  
-          // Xóa thông báo khỏi notyfi của currentUser
-          
+          setNotifications(notifications.filter((notif) => notif.userId !== userId));
         })
         .catch((error: any) => {
           message.error("Không thể từ chối lời mời kết bạn: " + error.message);
@@ -107,6 +89,28 @@ const Notify = () => {
         };
   };
 
+  const renderNotificationActions = (notification: notyfiType) => {
+    if (notification.content.includes("gửi lời mời kết bạn")) {
+      return [
+        <Button
+          type="primary"
+          onClick={() => handleAccept(notification.userId)}
+          style={{
+            marginRight: 8,
+            backgroundColor: "#FF69B4",
+            borderColor: "#FF69B4",
+          }}
+        >
+          Đồng ý
+        </Button>,
+        <Button onClick={() => handleDecline(notification.userId)}>
+          Từ chối
+        </Button>,
+      ];
+    }
+    return [];
+  };
+
   return (
     <div style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
       <div
@@ -118,37 +122,20 @@ const Notify = () => {
         }}
       >
         <Title level={3}>
-          <BellOutlined /> Lời mời kết bạn
+          <BellOutlined /> Thông báo
         </Title>
       </div>
 
-      {friendRequests.length === 0 ? (
-        <Text>Không có lời mời kết bạn mới</Text>
+      {notifications.length === 0 ? (
+        <Text>Không có thông báo mới</Text>
       ) : (
         <List
           itemLayout="horizontal"
-          dataSource={friendRequests}
+          dataSource={notifications}
           renderItem={(item) => {
             const userInfo = getUserInfo(item.userId);
             return (
-              <List.Item
-                actions={[
-                  <Button
-                    type="primary"
-                    onClick={() => handleAccept(item.userId)}
-                    style={{
-                      marginRight: 8,
-                      backgroundColor: "#FF69B4",
-                      borderColor: "#FF69B4",
-                    }}
-                  >
-                    Đồng ý
-                  </Button>,
-                  <Button onClick={() => handleDecline(item.userId)}>
-                    Từ chối
-                  </Button>,
-                ]}
-              >
+              <List.Item actions={renderNotificationActions(item)}>
                 <List.Item.Meta
                   avatar={
                     <Avatar
@@ -159,9 +146,6 @@ const Notify = () => {
                   }
                   title={
                     <div>
-                      <UserAddOutlined
-                        style={{ color: "#722ed1", marginRight: 8 }}
-                      />
                       <Text strong>
                         {userInfo.name} {item.content}
                       </Text>
@@ -169,7 +153,7 @@ const Notify = () => {
                   }
                   description={
                     <Text type="secondary">
-                      {new Date(item.date).toLocaleString("vi-VN")}
+                      {new Date(item.add_at).toLocaleString("vi-VN")}
                     </Text>
                   }
                 />
