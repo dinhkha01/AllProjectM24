@@ -16,6 +16,7 @@ import {
   Spin,
   List,
   Badge,
+  Popconfirm,
 } from "antd";
 import {
   EllipsisOutlined,
@@ -27,11 +28,12 @@ import {
   UploadOutlined,
   LeftOutlined,
   RightOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../config/firebase";
-import { addCommentToPost, createPost, deletePost, getAllPost, likePost, updatePostPrivacy } from "../../service/Login-Register/Post";
+import { addCommentToPost, createPost, deleteComment, deletePost, getAllPost, likePost, updatePostPrivacy } from "../../service/Login-Register/Post";
 import { addNotificationToUser, getAllUsers } from "../../service/Login-Register/User";
 import { RootState } from "../../store";
 
@@ -56,6 +58,7 @@ const TrangChu = () => {
   const posts = useSelector((state: RootState) => state.post.post);
   const currentUser = useSelector((state: RootState) => state.users.currentUser);
   const users = useSelector((state: RootState) => state.users.users);
+  const [showAllComments, setShowAllComments] = useState<{ [key: number]: boolean }>({});
 
 
   const sortedPosts = useMemo(() => {
@@ -68,7 +71,7 @@ const TrangChu = () => {
     const user = users.find((user) => user.id === userId);
     return user && user.avatar ? user.avatar : "https://via.placeholder.com/32";
   };
-  
+
   const getUserName = (userId: number) => {
     const user = users.find((user) => user.id === userId);
     return user ? user.name : "Người dùng ẩn danh";
@@ -223,16 +226,17 @@ const TrangChu = () => {
         date: new Date().toISOString(),
         reactions: []
       };
-  
+
       dispatch(addCommentToPost({ postId, comment: newComment }));
       setCommentContent('');
-  
+      setShowAllComments(prev => ({ ...prev, [postId]: true }));
+
       // Find the post and its author
       const post = posts.find(p => p.id === postId);
       if (post && post.userId !== currentUser.id) {
         // If the post author is not the current user, send a notification
         const notification = {
-          status:false,
+          status: false,
           userId: currentUser.id,
           content: `đã bình luận về bài viết của bạn`,
           add_at: new Date().toISOString(),
@@ -246,6 +250,16 @@ const TrangChu = () => {
     if (currentUser) {
       dispatch(likePost({ postId, userId: currentUser.id }));
     }
+  };
+  const handleDeleteComment = (postId: number, commentId: number) => {
+    dispatch(deleteComment({ postId, commentId }))
+      .unwrap()
+      .then(() => {
+        message.success("Bình luận đã được xóa thành công");
+      })
+      .catch(() => {
+        message.error("Có lỗi xảy ra khi xóa bình luận");
+      });
   };
 
   return (
@@ -450,9 +464,28 @@ const TrangChu = () => {
                 <div style={{ marginTop: "16px" }}>
                   <List
                     itemLayout="horizontal"
-                    dataSource={post.comments || []}
+                    dataSource={showAllComments[post.id] ? post.comments : post.comments?.slice(0, 3)}
                     renderItem={(comment) => (
-                      <List.Item>
+                      <List.Item
+                        actions={[
+                          currentUser?.id === post.userId && (
+                            <Popconfirm
+                              title="Bạn có chắc chắn muốn xóa bình luận này?"
+                              onConfirm={(e) => {
+                                e?.stopPropagation();
+                                handleDeleteComment(post.id, comment.id);
+                              }}
+                              okText="Có"
+                              cancelText="Không"
+                            >
+                              <DeleteOutlined
+                                style={{ color: 'red', cursor: 'pointer' }}
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                            </Popconfirm>
+                          ),
+                        ]}
+                      >
                         <List.Item.Meta
                           avatar={<Avatar src={getUserAvatar(comment.userId)} />}
                           title={getUserName(comment.userId)}
@@ -461,6 +494,17 @@ const TrangChu = () => {
                       </List.Item>
                     )}
                   />
+                  {!showAllComments[post.id] && post.comments && post.comments.length > 3 && (
+                    <Button
+                      type="link"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowAllComments(prev => ({ ...prev, [post.id]: true }));
+                      }}
+                    >
+                      Xem thêm {post.comments.length - 3} bình luận
+                    </Button>
+                  )}
                 </div>
               )}
               <Input

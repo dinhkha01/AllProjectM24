@@ -32,7 +32,12 @@
         {
           "userId": 3,
           "status": "accept",
-          "add_at": "2024-08-09T01:53:19.046Z"
+          "add_at": "2024-08-14T03:33:07.303Z"
+        },
+        {
+          "userId": 7,
+          "status": "accept",
+          "add_at": "2024-08-14T06:43:38.711Z"
         }
       ],
       "notyfi": [
@@ -40,19 +45,7 @@
           "status": true,
           "userId": 3,
           "content": "đã bình luận về bài viết của bạn",
-          "add_at": "2024-08-14T02:15:51.511Z"
-        },
-        {
-          "status": true,
-          "userId": 3,
-          "content": "đã bình luận về bài viết của bạn",
-          "add_at": "2024-08-14T02:16:28.682Z"
-        },
-        {
-          "status": true,
-          "userId": 3,
-          "content": "đã bình luận về bài viết của bạn",
-          "add_at": "2024-08-14T02:31:25.085Z"
+          "add_at": "2024-08-14T06:43:01.193Z"
         }
       ],
       "status": true
@@ -73,17 +66,10 @@
         {
           "userId": 2,
           "status": "accept",
-          "add_at": "2024-08-09T01:53:19.080Z"
+          "add_at": "2024-08-14T03:33:07.259Z"
         }
       ],
-      "notyfi": [
-        {
-          "status": true,
-          "userId": 2,
-          "content": "đã bình luận về bài viết của bạn",
-          "add_at": "2024-08-14T02:08:36.303Z"
-        }
-      ],
+      "notyfi": [],
       "status": true
     },
     {
@@ -128,7 +114,13 @@
       "avatar": "",
       "banner": "",
       "date": "",
-      "friends": [],
+      "friends": [
+        {
+          "userId": 2,
+          "status": "accept",
+          "add_at": "2024-08-14T06:43:38.658Z"
+        }
+      ],
       "notyfi": [],
       "id": 7,
       "status": true
@@ -147,6 +139,21 @@
       "notyfi": [],
       "id": 8,
       "status": true
+    },
+    {
+      "email": "su@vn.com",
+      "password": "$2a$10$r7MGXZZJtRoN1ZUsmKo8se1k2ePTXsZoHtrlGbRWenZNj6W6xupuq",
+      "name": "Su",
+      "phone": "0902956579",
+      "confirmPassword": "123456",
+      "role": false,
+      "avatar": "",
+      "banner": "",
+      "friends": [],
+      "notyfi": [],
+      "date": "2024-08-14T04:07:11.434Z",
+      "status": true,
+      "id": 9
     }
   ],
   "post": [
@@ -234,6 +241,13 @@
           "content": "gelo",
           "date": "2024-08-14T02:15:31.330Z",
           "reactions": []
+        },
+        {
+          "id": 1723606261643,
+          "userId": 2,
+          "content": "alolo",
+          "date": "2024-08-14T03:31:01.643Z",
+          "reactions": []
         }
       ]
     },
@@ -258,91 +272,9 @@
         },
         {
           "userId": 1
-        },
-        {
-          "userId": 2
         }
       ],
-      "comments": [
-        {
-          "userId": 2,
-          "content": "helo m",
-          "date": "2024-08-13T03:39:28.511Z"
-        },
-        {
-          "userId": 2,
-          "content": "sao thằng kia giống khỉ quá vậy",
-          "date": "2024-08-13T03:39:48.134Z"
-        },
-        {
-          "userId": 3,
-          "content": "ừ giống thiệc",
-          "date": "2024-08-13T03:40:09.229Z"
-        },
-        {
-          "id": 1723521014020,
-          "userId": 3,
-          "content": "alo",
-          "date": "2024-08-13T03:50:14.020Z",
-          "reactions": []
-        },
-        {
-          "id": 1723563769830,
-          "userId": 2,
-          "content": "a",
-          "date": "2024-08-13T15:42:49.830Z",
-          "reactions": []
-        },
-        {
-          "id": 1723599896645,
-          "userId": 2,
-          "content": "e",
-          "date": "2024-08-14T01:44:56.645Z",
-          "reactions": []
-        },
-        {
-          "id": 1723600188328,
-          "userId": 3,
-          "content": "nè",
-          "date": "2024-08-14T01:49:48.328Z",
-          "reactions": []
-        },
-        {
-          "id": 1723601208383,
-          "userId": 3,
-          "content": "alo",
-          "date": "2024-08-14T02:06:48.383Z",
-          "reactions": []
-        },
-        {
-          "id": 1723601751510,
-          "userId": 3,
-          "content": "e",
-          "date": "2024-08-14T02:15:51.510Z",
-          "reactions": []
-        },
-        {
-          "id": 1723601788682,
-          "userId": 3,
-          "content": "ơ kìa",
-          "date": "2024-08-14T02:16:28.682Z",
-          "reactions": []
-        },
-        {
-          "id": 1723602648932,
-          "userId": 2,
-          "content": "e",
-          "date": "2024-08-14T02:30:48.932Z",
-          "reactions": []
-        },
-        {
-          "id": 1723602685084,
-          "userId": 3,
-          "content": "heheehehehe",
-          "date": "2024-08-14T02:31:25.084Z",
-          "reactions": []
-        }
-      ]
+      "comments": []
     }
   ],
   "group": [
@@ -388,6 +320,13 @@
           ],
           "userId": 3,
           "dateat": "2024-08-07T13:54:16.768Z"
+        },
+        {
+          "idPostGroup": 1723608726309,
+          "content": "a",
+          "img": [],
+          "userId": 2,
+          "dateat": "2024-08-14T04:12:06.309Z"
         }
       ]
     },

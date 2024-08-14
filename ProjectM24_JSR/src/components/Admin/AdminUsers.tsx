@@ -71,9 +71,9 @@ const AdminUsers = () => {
       ),
     },
     {
-      title: 'CREATED AT',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      title: 'date',
+      dataIndex: 'date',
+      key: 'date',
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {

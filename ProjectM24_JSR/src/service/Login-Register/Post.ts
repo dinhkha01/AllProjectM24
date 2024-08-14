@@ -68,6 +68,19 @@ export const likePost: any = createAsyncThunk(
     return { postId, updatedPost: updatedResponse.data };
   }
 );
+/////
+export const deleteComment: any = createAsyncThunk(
+  'post/deleteComment',
+  async ({ postId, commentId }: { postId: number, commentId: number }) => {
+    const response = await api.get(`post/${postId}`);
+    const post = response.data;
+    const updatedComments = post.comments.filter((comment: any) => comment.id !== commentId);
+    const updatedResponse = await api.patch(`post/${postId}`, { 
+      comments: updatedComments
+    });
+    return { postId, updatedPost: updatedResponse.data };
+  }
+);
 export const postSlice = createSlice({
   name: "post",
   initialState: {
@@ -103,6 +116,12 @@ export const postSlice = createSlice({
           state.post[postIndex] = updatedPost;
         }
       }).addCase(likePost.fulfilled, (state, action) => {
+        const { postId, updatedPost } = action.payload;
+        const postIndex = state.post.findIndex(p => p.id === postId);
+        if (postIndex !== -1) {
+          state.post[postIndex] = updatedPost;
+        }
+      }).addCase(deleteComment.fulfilled, (state, action) => {
         const { postId, updatedPost } = action.payload;
         const postIndex = state.post.findIndex(p => p.id === postId);
         if (postIndex !== -1) {

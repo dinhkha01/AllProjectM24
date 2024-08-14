@@ -29,6 +29,7 @@ import {
 import { RootState } from "../../store";
 import { post, users } from "../../config/interface";
 import {
+  addNotificationToUser,
   rejectFriendRequest,
   updateFriends,
   updateReceiverFriends,
@@ -62,19 +63,34 @@ const ProfileUser = () => {
   const [previewImage, setPreviewImage] = useState("");
   const [currentPostImages, setCurrentPostImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showAllComments, setShowAllComments] = useState<{ [key: number]: boolean }>({});
 
   const handleCommentSubmit = (postId: number, content: string) => {
-    if (content.trim()) {
+    if (content.trim() && currentUser) {
       const newComment = {
         id: Date.now(),
-        userId: currentUser?.id,
+        userId: currentUser.id,
         content: content.trim(),
         date: new Date().toISOString(),
         reactions: []
       };
-
+  
       dispatch(addCommentToPost({ postId, comment: newComment }));
       setCommentContent('');
+      setShowAllComments(prev => ({ ...prev, [postId]: true }));
+  
+      // Find the post and its author
+      const post = posts.find(p => p.id === postId);
+      if (post && post.userId !== currentUser.id) {
+        // If the post author is not the current user, send a notification
+        const notification = {
+          status: false,
+          userId: currentUser.id,
+          content: `đã bình luận về bài viết của bạn`,
+          add_at: new Date().toISOString(),
+        };
+        dispatch(addNotificationToUser({ userId: post.userId, notification }));
+      }
     }
   };
 
@@ -428,23 +444,34 @@ const ProfileUser = () => {
                     </div>
                   </div>
                 )}
-                {activeCommentPostId === post.id && (
-                  <div style={{ marginTop: "16px" }}>
-                    <List
-                      itemLayout="horizontal"
-                      dataSource={post.comments || []}
-                      renderItem={(comment) => (
-                        <List.Item>
-                          <List.Item.Meta
-                            avatar={<Avatar src={getUserAvatar(comment.userId)} />}
-                            title={getUserName(comment.userId)}
-                            description={comment.content}
-                          />
-                        </List.Item>
-                      )}
-                    />
-                  </div>
-                )}
+               {activeCommentPostId === post.id && (
+  <div style={{ marginTop: "16px" }}>
+    <List
+      itemLayout="horizontal"
+      dataSource={showAllComments[post.id] ? post.comments : post.comments?.slice(0, 3)}
+      renderItem={(comment) => (
+        <List.Item>
+          <List.Item.Meta
+            avatar={<Avatar src={getUserAvatar(comment.userId)} />}
+            title={getUserName(comment.userId)}
+            description={comment.content}
+          />
+        </List.Item>
+      )}
+    />
+    {!showAllComments[post.id] && post.comments && post.comments.length > 3 && (
+      <Button 
+        type="link" 
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowAllComments(prev => ({ ...prev, [post.id]: true }));
+        }}
+      >
+        Xem thêm {post.comments.length - 3} bình luận
+      </Button>
+    )}
+  </div>
+)}
                 <Input
                   placeholder="Viết bình luận..."
                   value={commentContent}

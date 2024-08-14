@@ -125,17 +125,14 @@
   export const updateUserNotify: any = createAsyncThunk(
     "user/updateUserNotify",
     async (
-      { userId, newNotify }: { userId: number; newNotify: any[] },
-      { rejectWithValue }
+      { userId, newNotify }: { userId: number; newNotify: any[] }
     ) => {
-      try {
+    
         const response = await api.patch(`users/${userId}`, {
           notyfi: newNotify,
         });
         return response.data;
-      } catch (error: any) {
-        return rejectWithValue(error.response.data);
-      }
+     
     }
   );
 
@@ -312,6 +309,7 @@ export const markAllNotificationsAsRead: any = createAsyncThunk(
     }
   }
 );
+/////////////////////////////////
 
   // Slice
   export const authSlice = createSlice({

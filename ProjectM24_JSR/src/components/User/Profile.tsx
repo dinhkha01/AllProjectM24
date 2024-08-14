@@ -20,6 +20,7 @@ import {
   DatePicker,
   Menu,
   Badge,
+  Popconfirm,
 } from "antd";
 import {
   UserOutlined,
@@ -37,13 +38,14 @@ import {
   HeartFilled,
   LeftOutlined,
   RightOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { RootState } from "../../store";
-import { createPost, getAllPost, deletePost, updatePostPrivacy, addCommentToPost, likePost } from "../../service/Login-Register/Post";
+import { createPost, getAllPost, deletePost, updatePostPrivacy, addCommentToPost, likePost, deleteComment } from "../../service/Login-Register/Post";
 import { storage } from "../../config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-import { pushAvatar, pushBanner, pushInfor } from "../../service/Login-Register/User";
+import { addNotificationToUser, pushAvatar, pushBanner, pushInfor } from "../../service/Login-Register/User";
 import dayjs from 'dayjs';
 
 const { TabPane } = Tabs;
@@ -72,12 +74,13 @@ const Profile = () => {
   const [previewImage, setPreviewImage] = useState("");
   const [currentPostImages, setCurrentPostImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showAllComments, setShowAllComments] = useState<{ [key: number]: boolean }>({});
 
   const handleCommentSubmit = (postId: number, content: string) => {
-    if (content.trim()) {
+    if (content.trim() && user) {
       const newComment = {
         id: Date.now(),
-        userId: user?.id,
+        userId: user.id,
         content: content.trim(),
         date: new Date().toISOString(),
         reactions: []
@@ -85,6 +88,20 @@ const Profile = () => {
 
       dispatch(addCommentToPost({ postId, comment: newComment }));
       setCommentContent('');
+      setShowAllComments(prev => ({ ...prev, [postId]: true }));
+
+      // Find the post and its author
+      const post = posts.find(p => p.id === postId);
+      if (post && post.userId !== user.id) {
+        // If the post author is not the current user, send a notification
+        const notification = {
+          status: false,
+          userId: user.id,
+          content: `đã bình luận về bài viết của bạn`,
+          add_at: new Date().toISOString(),
+        };
+        dispatch(addNotificationToUser({ userId: post.userId, notification }));
+      }
     }
   };
 
@@ -276,7 +293,16 @@ const Profile = () => {
     setPreviewVisible(false);
     setCurrentImageIndex(0);
   };
-
+  const handleDeleteComment = (postId: number, commentId: number) => {
+    dispatch(deleteComment({ postId, commentId }))
+      .unwrap()
+      .then(() => {
+        message.success("Bình luận đã được xóa thành công");
+      })
+      .catch(() => {
+        message.error("Có lỗi xảy ra khi xóa bình luận");
+      });
+  };
   const pinkButtonStyle = {
     backgroundColor: "#FF69B4",
     borderColor: "#FF69B4",
@@ -528,9 +554,28 @@ const Profile = () => {
                   <div style={{ marginTop: "16px" }}>
                     <List
                       itemLayout="horizontal"
-                      dataSource={post.comments || []}
+                      dataSource={showAllComments[post.id] ? post.comments : post.comments?.slice(0, 3)}
                       renderItem={(comment) => (
-                        <List.Item>
+                        <List.Item
+                          actions={[
+                            user?.id === post.userId && (
+                              <Popconfirm
+                                title="Bạn có chắc chắn muốn xóa bình luận này?"
+                                onConfirm={(e) => {
+                                  e?.stopPropagation();
+                                  handleDeleteComment(post.id, comment.id);
+                                }}
+                                okText="Có"
+                                cancelText="Không"
+                              >
+                                <DeleteOutlined
+                                  style={{ color: 'red', cursor: 'pointer' }}
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                              </Popconfirm>
+                            ),
+                          ]}
+                        >
                           <List.Item.Meta
                             avatar={<Avatar src={getUserAvatar(comment.userId)} />}
                             title={getUserName(comment.userId)}
@@ -539,6 +584,17 @@ const Profile = () => {
                         </List.Item>
                       )}
                     />
+                    {!showAllComments[post.id] && post.comments && post.comments.length > 3 && (
+                      <Button
+                        type="link"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAllComments(prev => ({ ...prev, [post.id]: true }));
+                        }}
+                      >
+                        Xem thêm {post.comments.length - 3} bình luận
+                      </Button>
+                    )}
                   </div>
                 )}
                 <Input
