@@ -21,6 +21,7 @@ import {
   Menu,
   Badge,
   Popconfirm,
+  Spin,
 } from "antd";
 import {
   UserOutlined,
@@ -76,6 +77,9 @@ const Profile = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showAllComments, setShowAllComments] = useState<{ [key: number]: boolean }>({});
 
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const [bannerLoading, setBannerLoading] = useState(false);
+
   const handleCommentSubmit = (postId: number, content: string) => {
     if (content.trim() && user) {
       const newComment = {
@@ -90,10 +94,8 @@ const Profile = () => {
       setCommentContent('');
       setShowAllComments(prev => ({ ...prev, [postId]: true }));
 
-      // Find the post and its author
       const post = posts.find(p => p.id === postId);
       if (post && post.userId !== user.id) {
-        // If the post author is not the current user, send a notification
         const notification = {
           status: false,
           userId: user.id,
@@ -220,19 +222,35 @@ const Profile = () => {
   };
 
   const handleAvatarUpload = async (file: RcFile) => {
-    const imageRef = ref(storage, `avatars/${user?.id}`);
-    await uploadBytes(imageRef, file);
-    const url = await getDownloadURL(imageRef);
-    dispatch(pushAvatar(url));
-    message.success("Ảnh đại diện đã được cập nhật");
+    setAvatarLoading(true);
+    try {
+      const imageRef = ref(storage, `avatars/${user?.id}`);
+      await uploadBytes(imageRef, file);
+      const url = await getDownloadURL(imageRef);
+      dispatch(pushAvatar(url));
+      message.success("Ảnh đại diện đã được cập nhật");
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      message.error("Có lỗi xảy ra khi cập nhật ảnh đại diện");
+    } finally {
+      setAvatarLoading(false);
+    }
   };
 
   const handleBannerUpload = async (file: RcFile) => {
-    const imageRef = ref(storage, `covers/${user?.id}`);
-    await uploadBytes(imageRef, file);
-    const url = await getDownloadURL(imageRef);
-    dispatch(pushBanner(url));
-    message.success("Ảnh bìa đã được cập nhật");
+    setBannerLoading(true);
+    try {
+      const imageRef = ref(storage, `covers/${user?.id}`);
+      await uploadBytes(imageRef, file);
+      const url = await getDownloadURL(imageRef);
+      dispatch(pushBanner(url));
+      message.success("Ảnh bìa đã được cập nhật");
+    } catch (error) {
+      console.error("Error uploading banner:", error);
+      message.error("Có lỗi xảy ra khi cập nhật ảnh bìa");
+    } finally {
+      setBannerLoading(false);
+    }
   };
 
   const handlePostOptionClick = (postId: number, option: string) => {
@@ -293,6 +311,7 @@ const Profile = () => {
     setPreviewVisible(false);
     setCurrentImageIndex(0);
   };
+
   const handleDeleteComment = (postId: number, commentId: number) => {
     dispatch(deleteComment({ postId, commentId }))
       .unwrap()
@@ -303,6 +322,7 @@ const Profile = () => {
         message.error("Có lỗi xảy ra khi xóa bình luận");
       });
   };
+
   const pinkButtonStyle = {
     backgroundColor: "#FF69B4",
     borderColor: "#FF69B4",
@@ -321,16 +341,18 @@ const Profile = () => {
               overflow: "hidden",
             }}
           >
-            <Image
-              alt="cover"
-              src={user?.banner || "https://via.placeholder.com/940x300"}
-              style={{
-                height: "100%",
-                width: "100%",
-                objectFit: "cover",
-                objectPosition: "center",
-              }}
-            />
+            <Spin spinning={bannerLoading}>
+              <Image
+                alt="cover"
+                src={user?.banner || "https://via.placeholder.com/940x300"}
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center",
+                }}
+              />
+            </Spin>
             <Upload
               accept="image/*"
               showUploadList={false}
@@ -362,15 +384,17 @@ const Profile = () => {
               showUploadList={false}
               beforeUpload={handleAvatarUpload}
             >
-              <Avatar
-                size={180}
-                src={user?.avatar}
-                icon={<UserOutlined />}
-                style={{
-                  border: "4px solid white",
-                  cursor: "pointer",
-                }}
-              />
+              <Spin spinning={avatarLoading}>
+                <Avatar
+                  size={180}
+                  src={user?.avatar}
+                  icon={<UserOutlined />}
+                  style={{
+                    border: "4px solid white",
+                    cursor: "pointer",
+                  }}
+                />
+              </Spin>
             </Upload>
             <div style={{ marginLeft: 24, marginBottom: 16 }}>
               <Title level={2} style={{ marginBottom: 4 }}>
@@ -862,8 +886,7 @@ const Profile = () => {
           )}
         </div>
       </Modal>
-    </div>
-  );
+    </div>);
 };
 
 export default Profile;

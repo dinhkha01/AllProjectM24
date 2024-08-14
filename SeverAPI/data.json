@@ -23,7 +23,7 @@
       "name": "Kha",
       "phone": "0902956579",
       "role": false,
-      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F2?alt=media&token=363fe995-fb78-4f0d-b1ea-76debeaf9a16",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F2?alt=media&token=e4bd1183-d12e-40c3-ba9f-8e42fc3a8877",
       "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F2?alt=media&token=3fef6374-38e4-43ca-a73a-e83f21e75db9",
       "dob": "10/08/24",
       "date": "",
@@ -38,6 +38,11 @@
           "userId": 7,
           "status": "accept",
           "add_at": "2024-08-14T06:43:38.711Z"
+        },
+        {
+          "userId": 4,
+          "status": "accept",
+          "add_at": "2024-08-14T09:18:43.243Z"
         }
       ],
       "notyfi": [
@@ -67,113 +72,177 @@
           "userId": 2,
           "status": "accept",
           "add_at": "2024-08-14T03:33:07.259Z"
+        },
+        {
+          "userId": 4,
+          "status": "pending",
+          "add_at": "2024-08-14T09:18:47.503Z"
         }
       ],
-      "notyfi": [],
+      "notyfi": [
+        {
+          "status": false,
+          "userId": 4,
+          "content": " đã gửi lời mời kết bạn",
+          "add_at": "2024-08-14T09:18:47.503Z"
+        },
+        {
+          "status": false,
+          "userId": 4,
+          "content": "đã bình luận về bài viết của bạn",
+          "add_at": "2024-08-14T09:19:23.105Z"
+        }
+      ],
       "status": true
     },
     {
-      "id": 4,
-      "email": "alo@gmail.com",
-      "password": "$2a$10$O2V8VXjAKnPOljTkK65j0O4m8FcgqBERDM9sBKb0Pj01xR9QmRS92",
-      "name": "hi",
-      "phone": "1",
+      "email": "a1@vn.com",
+      "password": "$2a$10$WfUHPOkRQ.4qMyDp7f4Do.HuSCTMRYfnWs3upNhxTHNgNpwS/GdgO",
+      "name": "Cam",
+      "phone": "0111111111",
+      "confirmPassword": "111111",
       "role": false,
-      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F4?alt=media&token=ceb74490-2e90-4d08-88fa-a0169cdddf43",
-      "banner": "",
-      "dob": "",
-      "date": "",
-      "address": "",
-      "friends": [],
-      "notyfi": [],
-      "status": true
-    },
-    {
-      "email": "bin1@vn.com",
-      "password": "$2a$10$gyTwsgdOHqFuM30OSCEmAOkHwGbBbSsoIjt4WKHLzWn8MJHwQZSle",
-      "name": "chó tâm anh",
-      "phone": "0902956579",
-      "role": false,
-      "avatar": "",
-      "banner": "",
-      "dob": "",
-      "date": "",
-      "address": "",
-      "friends": [],
-      "notyfi": [],
-      "id": 5,
-      "status": true
-    },
-    {
-      "email": "a@gmail.com",
-      "password": "$2a$10$Knsxm6nUQcBta4mbBc/GA.RHBsAXYdcw6HjHUVvo6jYBsd00nD0Py",
-      "name": "Jacob Marcus",
-      "phone": "0902956579",
-      "confirmPassword": "123456",
-      "role": false,
-      "avatar": "",
-      "banner": "",
-      "date": "",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F4?alt=media&token=98b05539-8ccb-4566-9d07-81fbf8f2050d",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F4?alt=media&token=8e59c77f-ceb0-4b4c-aa49-d437de03c275",
       "friends": [
         {
           "userId": 2,
           "status": "accept",
-          "add_at": "2024-08-14T06:43:38.658Z"
+          "add_at": "2024-08-14T09:18:43.206Z"
+        },
+        {
+          "userId": 3,
+          "status": "pending",
+          "add_at": "2024-08-14T09:18:47.463Z"
         }
       ],
       "notyfi": [],
-      "id": 7,
-      "status": true
+      "date": "2024-08-14T08:49:24.973Z",
+      "status": true,
+      "id": 4
     },
     {
-      "email": "tho@gmail.com",
-      "password": "$2a$10$O8bNK27y1K3J7X7XkGWzp.B5XHeC8G/hZEp5Op.O9ngTXa/ksF59.",
-      "name": "thorr",
-      "phone": "0902956579",
-      "confirmPassword": "123456",
+      "email": "a2@vn.com",
+      "password": "$2a$10$P8JzBrHXVhV6ztTal4O/UO5fb8krjqVqp6w87P2xPrDxFxxR1ELmO",
+      "name": "Bưởi",
+      "phone": "022222222",
+      "confirmPassword": "222222",
       "role": false,
-      "avatar": "",
-      "banner": "",
-      "date": "",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F5?alt=media&token=5ad4022b-4dd6-43fe-9c27-9f95dc7a7e40",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F5?alt=media&token=35e95eb3-244e-4a65-b4b5-5bb0263d13b4",
       "friends": [],
       "notyfi": [],
-      "id": 8,
-      "status": true
+      "date": "2024-08-14T08:50:50.089Z",
+      "status": true,
+      "id": 5
     },
     {
-      "email": "su@vn.com",
-      "password": "$2a$10$r7MGXZZJtRoN1ZUsmKo8se1k2ePTXsZoHtrlGbRWenZNj6W6xupuq",
-      "name": "Su",
-      "phone": "0902956579",
-      "confirmPassword": "123456",
+      "email": "a3@vn.com",
+      "password": "$2a$10$cDiDWcyjvzQtz8GkURUI4eWjFQu/i5kbqIL/XBxTAwURn5eeCXcLa",
+      "name": "Quýt",
+      "phone": "0333333333",
+      "confirmPassword": "333333",
       "role": false,
-      "avatar": "",
-      "banner": "",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F6?alt=media&token=2f095bc1-f58c-4e9b-8975-c0a5d4a0c885",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F6?alt=media&token=01b8b570-e257-402f-baeb-ef5fd20bec6e",
       "friends": [],
       "notyfi": [],
-      "date": "2024-08-14T04:07:11.434Z",
+      "date": "2024-08-14T08:51:31.088Z",
+      "status": true,
+      "id": 6
+    },
+    {
+      "email": "a4@vn.com",
+      "password": "$2a$10$y5Jr.43Yt/2vhegIoHH46OiQXqi98fZhqzYBq.6MWysAUUP4F5c5a",
+      "name": "Xoài",
+      "phone": "0444444444",
+      "confirmPassword": "444444",
+      "role": false,
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F7?alt=media&token=c22cd25b-5aed-4b9a-a388-ad721c94a955",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F7?alt=media&token=7e376add-edc9-49c9-b484-75300a598bec",
+      "friends": [],
+      "notyfi": [],
+      "date": "2024-08-14T08:52:02.612Z",
+      "status": true,
+      "id": 7
+    },
+    {
+      "email": "a5@vn.com",
+      "password": "$2a$10$lhiqkSPKIrHZ.OE.xE5qzeH1bDIn/wXhMZPbktL1WlnTUVzjCDrG.",
+      "name": "Chuối",
+      "phone": "0555555555",
+      "confirmPassword": "555555",
+      "role": false,
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F8?alt=media&token=1c9d0faa-5bbe-4d98-8abf-eb03414a2bea",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F8?alt=media&token=e45b6875-c8fc-43d0-bf83-093b0dd98bb1",
+      "friends": [],
+      "notyfi": [],
+      "date": "2024-08-14T09:02:16.883Z",
+      "status": true,
+      "id": 8
+    },
+    {
+      "email": "a6@vn.com",
+      "password": "$2a$10$.E19MpiELu4vPw.zgd/iEOVUIJDBu5PhzS66AMIIHPycL0h/WqcPu",
+      "name": "Ổi",
+      "phone": "0666666666",
+      "confirmPassword": "666666",
+      "role": false,
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F9?alt=media&token=cf2132aa-5e6b-477b-a10c-f25fa99b35d7",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F9?alt=media&token=18879c14-5b74-464d-baec-54c18b65af1c",
+      "friends": [],
+      "notyfi": [],
+      "date": "2024-08-14T09:02:57.093Z",
       "status": true,
       "id": 9
+    },
+    {
+      "email": "a7@vn.com",
+      "password": "$2a$10$99fyKuB2t0FozhBlBIdTyeZBQRLjQEsHaFVjnQVCWd0H0Ozl/aU.S",
+      "name": "Mận",
+      "phone": "0777777777",
+      "confirmPassword": "777777",
+      "role": false,
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F10?alt=media&token=16b5b1a2-5f44-47f8-8ab8-0d6dd861efe6",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F10?alt=media&token=4e50bfbb-eb9c-4011-a732-e91a0027353a",
+      "friends": [],
+      "notyfi": [],
+      "date": "2024-08-14T09:03:34.253Z",
+      "status": true,
+      "id": 10
+    },
+    {
+      "email": "a8@vn.com",
+      "password": "$2a$10$wi2qnh8xkKT4g0eSnZKCiO0c.AFfegsSvlVUUEpc8AmyZbp1V1DgC",
+      "name": "Dưa Hấu",
+      "phone": "088888888",
+      "confirmPassword": "888888",
+      "role": false,
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F11?alt=media&token=ddf0094e-4d9d-4d20-951b-dcdd4fd03418",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F11?alt=media&token=a26588b8-e21b-4168-83fb-24ab1ffb81b2",
+      "friends": [],
+      "notyfi": [],
+      "date": "2024-08-14T09:04:10.573Z",
+      "status": true,
+      "id": 11
+    },
+    {
+      "email": "a9@vn.com",
+      "password": "$2a$10$J3.sx.xEyh.yWo6ld3ket.oGnLbV6k99bb9zMkCBAG4dMiJzDB/cC",
+      "name": "Zú Sữa",
+      "phone": "099999999",
+      "confirmPassword": "999999",
+      "role": false,
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/avatars%2F12?alt=media&token=5a55fea8-1359-4fc8-b135-1830366a60a7",
+      "banner": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/covers%2F12?alt=media&token=31368ea2-6310-47fd-9475-36a4c52e50bd",
+      "friends": [],
+      "notyfi": [],
+      "date": "2024-08-14T09:05:03.493Z",
+      "status": true,
+      "id": 12
     }
   ],
   "post": [
-    {
-      "content": "anh nè",
-      "img": [
-        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Fkh.jpg?alt=media&token=c6ccef89-0ceb-4bd7-8fe6-8334ebc85e23"
-      ],
-      "userId": 2,
-      "date": "2024-07-30T08:09:02.083Z",
-      "id": 3,
-      "privacy": "public",
-      "status": true,
-      "comments": [],
-      "like": [
-        {
-          "userId": 2
-        }
-      ]
-    },
     {
       "content": "hi",
       "img": [
@@ -248,33 +317,127 @@
           "content": "alolo",
           "date": "2024-08-14T03:31:01.643Z",
           "reactions": []
+        },
+        {
+          "id": 1723627163105,
+          "userId": 4,
+          "content": "dth",
+          "date": "2024-08-14T09:19:23.105Z",
+          "reactions": []
         }
       ]
     },
     {
-      "content": "hu",
+      "content": "Chán wá àaaaa",
       "img": [
-        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Fkh.jpg?alt=media&token=5318de48-20ae-46bd-ade6-305a9f50543e",
-        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Ffootr.png?alt=media&token=c9f6c0e5-3081-4610-ad27-1f5d863891c6",
-        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2FScreenshot%202024-01-10%20083813.png?alt=media&token=47f48e5d-8501-4dae-931d-b5dd849525b2",
-        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Fkong.jpg?alt=media&token=a73fc011-baaf-4da3-b3f3-044df2848f71",
-        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Fkh.jpg?alt=media&token=04534e89-e98b-4d54-af1a-a14395eab0a6",
-        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2FScreenshot%202024-01-10%20083813.png?alt=media&token=cb11cd6b-2240-49b4-a9f7-3ee1ef56beb8"
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2Fc9456bd675c8f3718805335f1d0ee66e.jpg?alt=media&token=555e5d5b-d323-40f2-b2c6-a9f1c3657bce"
       ],
-      "userId": 2,
-      "date": "2024-07-31T03:14:13.385Z",
-      "id": 6,
+      "userId": 4,
+      "date": "2024-08-14T09:15:26.958Z",
       "privacy": "public",
       "status": true,
       "like": [
         {
-          "userId": 3
-        },
-        {
-          "userId": 1
+          "userId": 4
         }
       ],
-      "comments": []
+      "id": 5
+    },
+    {
+      "content": "Cần 1 bờ vai bên cạnh !!!",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2F449716844_1468888753721481_1961455669903788006_n.jpg?alt=media&token=789f82b5-83ec-4ab8-ba95-7805759d5536"
+      ],
+      "userId": 5,
+      "date": "2024-08-14T09:57:28.025Z",
+      "privacy": "public",
+      "status": true,
+      "like": [],
+      "id": 6
+    },
+    {
+      "content": "Nắng hừng đông không ai bên cạnh\n",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2F454469142_1005649804538547_5874790418471430946_n.jpg?alt=media&token=4e96c986-bbb5-4716-bea8-7a676ba4dd82"
+      ],
+      "userId": 6,
+      "date": "2024-08-14T09:59:50.981Z",
+      "privacy": "public",
+      "status": true,
+      "like": [],
+      "id": 7
+    },
+    {
+      "content": "Anh có muốn ?",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2F414115561_735842845146546_4207189444832607378_n.jpg?alt=media&token=e54a0216-2968-420b-ab2b-95ed2063c68d"
+      ],
+      "userId": 7,
+      "date": "2024-08-14T10:01:15.098Z",
+      "privacy": "public",
+      "status": true,
+      "like": [],
+      "id": 8
+    },
+    {
+      "content": "Anh mệt lắm à ....\nĐể em lo ",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2F296293933_1118453449027543_7163932531552706752_n.jpg?alt=media&token=fd0d66a8-b39c-4314-8170-772474c2a4ad"
+      ],
+      "userId": 8,
+      "date": "2024-08-14T10:04:41.678Z",
+      "privacy": "public",
+      "status": true,
+      "like": [],
+      "id": 9
+    },
+    {
+      "content": "Hôm nay cảm thấy thế nào vậy ^_^",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2F352160041_583477193917924_1517201127593381802_n.jpg?alt=media&token=7aca00cc-1dcb-4528-b955-d24f6c8e772f"
+      ],
+      "userId": 9,
+      "date": "2024-08-14T10:06:02.040Z",
+      "privacy": "public",
+      "status": true,
+      "like": [],
+      "id": 10
+    },
+    {
+      "content": "Bơi cùng em nhé",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2F278648656_706669643800253_354255430990783689_n.jpg?alt=media&token=10417769-5f32-46f6-bac5-097e44982cf0"
+      ],
+      "userId": 10,
+      "date": "2024-08-14T10:07:22.753Z",
+      "privacy": "public",
+      "status": true,
+      "like": [],
+      "id": 11
+    },
+    {
+      "content": "Muốn làm công chúa quá",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2F438215907_3817102641899032_1540721539377969646_n.jpg?alt=media&token=c50dabf7-8438-4036-be46-73450f5635b9"
+      ],
+      "userId": 11,
+      "date": "2024-08-14T10:08:49.726Z",
+      "privacy": "public",
+      "status": true,
+      "like": [],
+      "id": 12
+    },
+    {
+      "content": "Tình yêu là gì",
+      "img": [
+        "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/images%2F454730914_445317331830416_8644789717769763650_n.jpg?alt=media&token=bb109c48-3ab8-4318-9221-1cfb24511d4e"
+      ],
+      "userId": 12,
+      "date": "2024-08-14T10:10:04.858Z",
+      "privacy": "public",
+      "status": true,
+      "like": [],
+      "id": 13
     }
   ],
   "group": [
@@ -283,7 +446,7 @@
       "status": true,
       "dateAt": "2024-08-09T01:57:12.955Z",
       "groupName": "QQNe",
-      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/group-avatars%2F1?alt=media&token=da2da3bf-5d8b-4ba2-9cb5-9ec83622ffe1",
+      "avatar": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/group-avatars%2F1?alt=media&token=04ddfce8-3248-4a9e-b335-73fba64c07ae",
       "coverimg": "https://firebasestorage.googleapis.com/v0/b/khaa-4a9da.appspot.com/o/group-covers%2F1?alt=media&token=3e458d33-8600-45d4-bb8f-ce75fef76904",
       "members": [
         {

@@ -18,6 +18,7 @@ import {
   List,
   Menu,
   Dropdown,
+  Spin,
 } from "antd";
 import {
   UserOutlined,
@@ -68,7 +69,8 @@ const ProfileGroup = () => {
   const [previewImage, setPreviewImage] = useState("");
   const [currentPostImages, setCurrentPostImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const [coverLoading, setCoverLoading] = useState(false);
   useEffect(() => {
     const updatedGroup = allGroups.find((g) => g.id === parsedGroupId);
     if (updatedGroup) {
@@ -94,24 +96,38 @@ const ProfileGroup = () => {
 
   const handleAvatarUpload = async (file: RcFile) => {
     if (!group) return;
-    const imageRef = ref(storage, `group-avatars/${group.id}`);
-    await uploadBytes(imageRef, file);
-    const url = await getDownloadURL(imageRef);
-
-    dispatch(pushAvatar({ groupId: group.id, avatar: url }));
-    setLocalAvatar(url);
-    message.success("Ảnh đại diện nhóm đã được cập nhật");
+    setAvatarLoading(true);
+    try {
+      const imageRef = ref(storage, `group-avatars/${group.id}`);
+      await uploadBytes(imageRef, file);
+      const url = await getDownloadURL(imageRef);
+  
+      dispatch(pushAvatar({ groupId: group.id, avatar: url }));
+      setLocalAvatar(url);
+      message.success("Ảnh đại diện nhóm đã được cập nhật");
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi tải lên ảnh đại diện");
+    } finally {
+      setAvatarLoading(false);
+    }
   };
-
+  
   const handleCoverUpload = async (file: RcFile) => {
     if (!group) return;
-    const imageRef = ref(storage, `group-covers/${group.id}`);
-    await uploadBytes(imageRef, file);
-    const url = await getDownloadURL(imageRef);
-
-    dispatch(pushCoverImg({ groupId: group.id, coverimg: url }));
-    setLocalCoverImg(url);
-    message.success("Ảnh bìa nhóm đã được cập nhật");
+    setCoverLoading(true);
+    try {
+      const imageRef = ref(storage, `group-covers/${group.id}`);
+      await uploadBytes(imageRef, file);
+      const url = await getDownloadURL(imageRef);
+  
+      dispatch(pushCoverImg({ groupId: group.id, coverimg: url }));
+      setLocalCoverImg(url);
+      message.success("Ảnh bìa nhóm đã được cập nhật");
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi tải lên ảnh bìa");
+    } finally {
+      setCoverLoading(false);
+    }
   };
 
   const handlePostClick = () => {
@@ -218,84 +234,88 @@ const ProfileGroup = () => {
 
   return (
     <div>
-      <Card
-        cover={
-          <div
+     <Card
+  cover={
+    <div
+      style={{
+        height: 300,
+        background: "#f0f2f5",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <Spin spinning={coverLoading}>
+        <Image
+          alt="cover"
+          src={localCoverImg || "https://via.placeholder.com/940x300"}
+          style={{
+            height: "100%",
+            width: "100%",
+            objectFit: "cover",
+            objectPosition: "center",
+          }}
+        />
+      </Spin>
+      {isCreator && (
+        <Upload
+          accept="image/*"
+          showUploadList={false}
+          beforeUpload={handleCoverUpload}
+        >
+          <Button
+            icon={<CameraOutlined />}
             style={{
-              height: 300,
-              background: "#f0f2f5",
-              position: "relative",
-              overflow: "hidden",
+              ...pinkButtonStyle,
+              position: "absolute",
+              bottom: 16,
+              right: 16,
+              zIndex: 1000,
             }}
           >
-            <Image
-              alt="cover"
-              src={localCoverImg || "https://via.placeholder.com/940x300"}
+            Chỉnh sửa ảnh bìa
+          </Button>
+        </Upload>
+      )}
+    </div>
+  }
+  bodyStyle={{ padding: 0 }}
+>
+  <div style={{ padding: "0 24px", position: "relative" }}>
+    <div
+      style={{ display: "flex", alignItems: "flex-end", marginTop: -90 }}
+    >
+      <div style={{ position: 'relative' }}>
+        <Upload
+          accept="image/*"
+          showUploadList={false}
+          beforeUpload={handleAvatarUpload}
+          disabled={!isCreator}
+        >
+          <Spin spinning={avatarLoading}>
+            <Avatar
+              size={180}
+              icon={<UserOutlined />}
+              src={localAvatar}
               style={{
-                height: "100%",
-                width: "100%",
-                objectFit: "cover",
-                objectPosition: "center",
+                border: "4px solid white",
+                cursor: isCreator ? "pointer" : "default",
               }}
             />
-            {isCreator && (
-              <Upload
-                accept="image/*"
-                showUploadList={false}
-                beforeUpload={handleCoverUpload}
-              >
-                <Button
-                  icon={<CameraOutlined />}
-                  style={{
-                    ...pinkButtonStyle,
-                    position: "absolute",
-                    bottom: 16,
-                    right: 16,
-                    zIndex: 1000,
-                  }}
-                >
-                  Chỉnh sửa ảnh bìa
-                </Button>
-              </Upload>
-            )}
-          </div>
-        }
-        bodyStyle={{ padding: 0 }}
-      >
-        <div style={{ padding: "0 24px", position: "relative" }}>
-          <div
-            style={{ display: "flex", alignItems: "flex-end", marginTop: -90 }}
-          >
-            <div style={{ position: 'relative' }}>
-              <Upload
-                accept="image/*"
-                showUploadList={false}
-                beforeUpload={handleAvatarUpload}
-                disabled={!isCreator}
-              >
-                <Avatar
-                  size={180}
-                  icon={<UserOutlined />}
-                  src={localAvatar}
-                  style={{
-                    border: "4px solid white",
-                    cursor: isCreator ? "pointer" : "default",
-                  }}
-                />
-                {isCreator && (
-                  <Button
-                    style={{
-                      position: 'absolute',
-                      bottom: '10px',
-                      right: '10px',
-                      ...pinkButtonStyle
-                    }}
-                    icon={<CameraOutlined />}
-                    shape="circle"
-                  />
-                )}
-              </Upload>
-            </div>
+          </Spin>
+          {isCreator && (
+            <Button
+              style={{
+                position: 'absolute',
+                bottom: '10px',
+                right: '10px',
+                ...pinkButtonStyle
+              }}
+              icon={<CameraOutlined />}
+              shape="circle"
+            />
+          )}
+        </Upload>
+      </div>
             <div style={{ marginLeft: 24, marginBottom: 16 }}>
               <Title level={2} style={{ marginBottom: 4 }}>
                 {group.groupName}
